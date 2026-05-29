@@ -1,21 +1,80 @@
-def bubble_sort(arr):
+def merge_sort(arr):
+    if len(arr) > 1:
+        mid = len(arr) // 2
+        left_half = arr[:mid]
+        right_half = arr[mid:]
+        merge_sort(left_half)
+        merge_sort(right_half)
+        i = j = k = 0
+        while i < len(left_half) and j < len(right_half):
+            if left_half[i] < right_half[j]:
+                arr[k] = left_half[i]
+                i += 1
+            else:
+                arr[k] = right_half[j]
+                j += 1
+            k += 1
+        while i < len(left_half):
+            arr[k] = left_half[i]
+            i += 1
+            k += 1
+        while j < len(right_half):
+            arr[k] = right_half[j]
+            j += 1
+            k += 1
+
+def quick_sort(arr, low, high):
+    if low < high:
+        pivot = arr[high]
+        i = low - 1
+        for j in range(low, high):
+            if arr[j] <= pivot:
+                i = i + 1
+                arr[i], arr[j] = arr[j], arr[i]
+        arr[i + 1], arr[high] = arr[high], arr[i + 1]
+        pi = i + 1
+        quick_sort(arr, low, pi - 1)
+        quick_sort(arr, pi + 1, high)
+
+def heap_sort(arr):
     n = len(arr)
-    for i in range(n):
-        for j in range(0, n - i - 1):
-            if arr[j] > arr[j + 1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    for i in range(n // 2 - 1, -1, -1):
+        largest = i
+        l = 2 * i + 1
+        r = 2 * i + 2
+        if l < n and arr[i] < arr[l]:
+            largest = l
+        if r < n and arr[largest] < arr[r]:
+            largest = r
+        if largest != i:
+            arr[i], arr[largest] = arr[largest], arr[i]
+    for i in range(n - 1, 0, -1):
+        arr[i], arr[0] = arr[0], arr[i]
+        largest = 0
+        l = 1
+        r = 2
+        if l < i and arr[0] < arr[l]:
+            largest = l
+        if r < i and arr[largest] < arr[r]:
+            largest = r
+        if largest != 0:
+            arr[0], arr[largest] = arr[largest], arr[0]
+
+def shell_sort(arr):
+    n = len(arr)
+    gap = n // 2
+    while gap > 0:
+        for i in range(gap, n):
+            temp = arr[i]
+            j = i
+            while j >= gap and arr[j - gap] > temp:
+                arr[j] = arr[j - gap]
+                j -= gap
+            arr[j] = temp
+        gap //= 2
     return arr
 
-def selection_sort(arr):
-    for i in range(len(arr)):
-        min_idx = i
-        for j in range(i + 1, len(arr)):
-            if arr[min_idx] > arr[j]:
-                min_idx = j
-        arr[i], arr[min_idx] = arr[min_idx], arr[i]
-    return arr
-
-def insertion_sort(arr):
+def insertion_sort_advanced(arr):
     for i in range(1, len(arr)):
         key = arr[i]
         j = i - 1
@@ -25,337 +84,3597 @@ def insertion_sort(arr):
         arr[j + 1] = key
     return arr
 
-def quick_sort(arr):
-    if len(arr) <= 1:
-        return arr
-    pivot = arr[len(arr) // 2]
-    left = [x for x in arr if x < pivot]
-    middle = [x for x in arr if x == pivot]
-    right = [x for x in arr if x > pivot]
-    return quick_sort(left) + middle + quick_sort(right)
+def binary_search_recursive(arr, low, high, x):
+    if high >= low:
+        mid = (high + low) // 2
+        if arr[mid] == x:
+            return mid
+        elif arr[mid] > x:
+            return binary_search_recursive(arr, low, mid - 1, x)
+        else:
+            return binary_search_recursive(arr, mid + 1, high, x)
+    else:
+        return -1
 
-def merge_sort(arr):
-    if len(arr) > 1:
-        mid = len(arr) // 2
-        left = arr[:mid]
-        right = arr[mid:]
-        merge_sort(left)
-        merge_sort(right)
-    return arr
+def exponential_search(arr, n, x):
+    if arr[0] == x:
+        return 0
+    i = 1
+    while i < n and arr[i] <= x:
+        i = i * 2
+    low = i // 2
+    high = min(i, n - 1)
+    while low <= high:
+        mid = (low + high) // 2
+        if arr[mid] == x:
+            return mid
+        elif arr[mid] < x:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1
 
-def factorial(n):
-    if n == 0 or n == 1:
-        return 1
-    return n * factorial(n - 1)
+def jump_search(arr, x, n):
+    import math
+    step = math.sqrt(n)
+    prev = 0
+    while arr[int(min(step, n) - 1)] < x:
+        prev = step
+        step += math.sqrt(n)
+        if prev >= n:
+            return -1
+    while arr[int(prev)] < x:
+        prev += 1
+        if prev == min(step, n):
+            return -1
+    if arr[int(prev)] == x:
+        return int(prev)
+    return -1
 
-def fibonacci(n):
-    a, b = 0, 1
-    for _ in range(n):
-        a, b = b, a + b
-    return a
-
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
-
-def is_prime(n):
-    if n <= 1:
-        return False
-    for i in range(2, int(n ** 0.5) + 1):
-        if n % i == 0:
-            return False
-    return True
-
-def power(base, exp):
-    result = 1
-    for _ in range(exp):
-        result *= base
+def matrix_multiplication(A, B):
+    result = [[0 for _ in range(len(B[0]))] for _ in range(len(A))]
+    for i in range(len(A)):
+        for j in range(len(B[0])):
+            for k in range(len(B)):
+                result[i][j] += A[i][k] * B[k][j]
     return result
 
-def reverse_list(arr):
-    reversed_arr = []
-    for i in range(len(arr) - 1, -1, -1):
-        reversed_arr.append(arr[i])
-    return reversed_arr
+def rotate_matrix_90_degrees(matrix):
+    n = len(matrix)
+    for i in range(n // 2):
+        for j in range(i, n - i - 1):
+            temp = matrix[i][j]
+            matrix[i][j] = matrix[n - 1 - j][i]
+            matrix[n - 1 - j][i] = matrix[n - 1 - i][n - 1 - j]
+            matrix[n - 1 - i][n - 1 - j] = matrix[j][n - 1 - i]
+            matrix[j][n - 1 - i] = temp
+    return matrix
 
-def filter_even(arr):
-    evens = []
-    for num in arr:
-        if num % 2 == 0:
-            evens.append(num)
-    return evens
+def generate_primes_sieve(limit):
+    sieve = [True] * (limit + 1)
+    p = 2
+    while p * p <= limit:
+        if sieve[p]:
+            for i in range(p * p, limit + 1, p):
+                sieve[i] = False
+        p += 1
+    primes = []
+    for p in range(2, limit + 1):
+        if sieve[p]:
+            primes.append(p)
+    return primes
 
-def find_max(arr):
-    if not arr:
+def gcd_extended(a, b):
+    if a == 0:
+        return b, 0, 1
+    gcd, x1, y1 = gcd_extended(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return gcd, x, y
+
+def fibonacci_memoization(n, memo={}):
+    if n in memo:
+        return memo[n]
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        result = fibonacci_memoization(n - 1, memo) + fibonacci_memoization(n - 2, memo)
+        memo[n] = result
+        return result
+
+def pascal_triangle(num_rows):
+    triangle = []
+    for i in range(num_rows):
+        row = [None for _ in range(i + 1)]
+        row[0], row[-1] = 1, 1
+        for j in range(1, len(row) - 1):
+            row[j] = triangle[i - 1][j - 1] + triangle[i - 1][j]
+        triangle.append(row)
+    return triangle
+
+def base_converter(number, base):
+    if number == 0:
+        return "0"
+    digits = []
+    while number > 0:
+        remainder = number % base
+        if remainder >= 10:
+            digits.append(chr(ord('A') + remainder - 10))
+        else:
+            digits.append(str(remainder))
+        number //= base
+    digits.reverse()
+    return "".join(digits)
+
+def is_palindrome_string(s):
+    cleaned = ""
+    for char in s:
+        if char.isalnum():
+            cleaned += char.lower()
+    left = 0
+    right = len(cleaned) - 1
+    while left < right:
+        if cleaned[left] != cleaned[right]:
+            return False
+        left += 1
+        right -= 1
+    return True
+
+def group_anagrams(words):
+    anagrams = {}
+    for word in words:
+        sorted_word = "".join(sorted(word))
+        if sorted_word not in anagrams:
+            anagrams[sorted_word] = []
+        anagrams[sorted_word].append(word)
+    result = []
+    for key in anagrams:
+        result.append(anagrams[key])
+    return result
+
+def compress_string(s):
+    if not s:
+        return ""
+    compressed = []
+    count = 1
+    for i in range(1, len(s)):
+        if s[i] == s[i - 1]:
+            count += 1
+        else:
+            compressed.append(s[i - 1] + str(count))
+            count = 1
+    compressed.append(s[-1] + str(count))
+    result = "".join(compressed)
+    if len(result) < len(s):
+        return result
+    return s
+
+def caesar_cipher(text, shift):
+    result = ""
+    for i in range(len(text)):
+        char = text[i]
+        if char.isupper():
+            result += chr((ord(char) + shift - 65) % 26 + 65)
+        elif char.islower():
+            result += chr((ord(char) + shift - 97) % 26 + 97)
+        else:
+            result += char
+    return result
+
+def longest_common_prefix(strs):
+    if not strs:
+        return ""
+    prefix = strs[0]
+    for i in range(1, len(strs)):
+        while strs[i].find(prefix) != 0:
+            prefix = prefix[:-1]
+            if not prefix:
+                return ""
+    return prefix
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+        if not self.head:
+            self.head = new_node
+            return
+        last = self.head
+        while last.next:
+            last = last.next
+        last.next = new_node
+
+    def display(self):
+        current = self.head
+        elements = []
+        while current:
+            elements.append(current.data)
+            current = current.next
+        return elements
+
+def reverse_linked_list(head):
+    prev = None
+    current = head
+    while current is not None:
+        next_node = current.next
+        current.next = prev
+        prev = current
+        current = next_node
+    return prev
+
+def detect_cycle_linked_list(head):
+    slow = head
+    fast = head
+    while fast is not None and fast.next is not None:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            return True
+    return False
+
+def merge_sorted_linked_lists(l1, l2):
+    dummy = Node(0)
+    tail = dummy
+    while l1 is not None and l2 is not None:
+        if l1.data < l2.data:
+            tail.next = l1
+            l1 = l1.next
+        else:
+            tail.next = l2
+            l2 = l2.next
+        tail = tail.next
+    if l1 is not None:
+        tail.next = l1
+    elif l2 is not None:
+        tail.next = l2
+    return dummy.next
+
+class Stack:
+    def __init__(self):
+        self.items = []
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        if not self.is_empty():
+            return self.items.pop()
         return None
-    max_val = arr[0]
-    for num in arr:
-        if num > max_val:
-            max_val = num
-    return max_val
 
-def sum_array(arr):
-    total = 0
-    for num in arr:
-        total += num
-    return total
+    def peek(self):
+        if not self.is_empty():
+            return self.items[-1]
+        return None
 
-def remove_duplicates(arr):
-    unique = []
-    for num in arr:
-        if num not in unique:
-            unique.append(num)
-    return unique
+class Queue:
+    def __init__(self):
+        self.items = []
 
-class Person:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
+    def is_empty(self):
+        return len(self.items) == 0
 
-    def greet(self):
-        return f"Hello, my name is {self.name}"
+    def enqueue(self, item):
+        self.items.insert(0, item)
 
-class Rectangle:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
+    def dequeue(self):
+        if not self.is_empty():
+            return self.items.pop()
+        return None
 
-    def area(self):
-        return self.width * self.height
+    def size(self):
+        return len(self.items)
+
+def evaluate_postfix(expression):
+    stack = []
+    for char in expression:
+        if char.isdigit():
+            stack.append(int(char))
+        else:
+            val1 = stack.pop()
+            val2 = stack.pop()
+            if char == '+':
+                stack.append(val2 + val1)
+            elif char == '-':
+                stack.append(val2 - val1)
+            elif char == '*':
+                stack.append(val2 * val1)
+            elif char == '/':
+                stack.append(val2 / val1)
+    return stack.pop()
+
+def check_balanced_parentheses(expression):
+    stack = []
+    mapping = {')': '(', '}': '{', ']': '['}
+    for char in expression:
+        if char in mapping.values():
+            stack.append(char)
+        elif char in mapping.keys():
+            if not stack or mapping[char] != stack.pop():
+                return False
+    return len(stack) == 0
+
+class TreeNode:
+    def __init__(self, key):
+        self.left = None
+        self.right = None
+        self.val = key
+
+def insert_bst(root, key):
+    if root is None:
+        return TreeNode(key)
+    else:
+        if root.val == key:
+            return root
+        elif root.val < key:
+            root.right = insert_bst(root.right, key)
+        else:
+            root.left = insert_bst(root.left, key)
+    return root
+
+def inorder_traversal(root):
+    result = []
+    if root:
+        result = inorder_traversal(root.left)
+        result.append(root.val)
+        result = result + inorder_traversal(root.right)
+    return result
+
+def max_depth_tree(root):
+    if root is None:
+        return 0
+    else:
+        left_depth = max_depth_tree(root.left)
+        right_depth = max_depth_tree(root.right)
+        if left_depth > right_depth:
+            return left_depth + 1
+        else:
+            return right_depth + 1
+
+def is_symmetric_tree(root):
+    def is_mirror(t1, t2):
+        if t1 is None and t2 is None:
+            return True
+        if t1 is None or t2 is None:
+            return False
+        return (t1.val == t2.val) and is_mirror(t1.right, t2.left) and is_mirror(t1.left, t2.right)
+    if root is None:
+        return True
+    return is_mirror(root.left, root.right)
+
+class GraphDFS:
+    def __init__(self):
+        self.graph = {}
+
+    def add_edge(self, u, v):
+        if u not in self.graph:
+            self.graph[u] = []
+        self.graph[u].append(v)
+
+    def dfs_util(self, v, visited):
+        visited.add(v)
+        if v in self.graph:
+            for neighbour in self.graph[v]:
+                if neighbour not in visited:
+                    self.dfs_util(neighbour, visited)
+
+    def dfs(self, v):
+        visited = set()
+        self.dfs_util(v, visited)
+        return visited
+
+class GraphBFS:
+    def __init__(self):
+        self.graph = {}
+
+    def add_edge(self, u, v):
+        if u not in self.graph:
+            self.graph[u] = []
+        self.graph[u].append(v)
+
+    def bfs(self, start):
+        visited = set()
+        queue = [start]
+        visited.add(start)
+        traversal = []
+        while queue:
+            s = queue.pop(0)
+            traversal.append(s)
+            if s in self.graph:
+                for i in self.graph[s]:
+                    if i not in visited:
+                        queue.append(i)
+                        visited.add(i)
+        return traversal
+
+def count_islands(grid):
+    if not grid:
+        return 0
+    count = 0
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if grid[i][j] == '1':
+                dfs_island(grid, i, j)
+                count += 1
+    return count
+
+def dfs_island(grid, i, j):
+    if i < 0 or j < 0 or i >= len(grid) or j >= len(grid[0]) or grid[i][j] != '1':
+        return
+    grid[i][j] = '0'
+    dfs_island(grid, i + 1, j)
+    dfs_island(grid, i - 1, j)
+    dfs_island(grid, i, j + 1)
+    dfs_island(grid, i, j - 1)
+
+def dijkstra_algorithm(graph, start):
+    distances = {node: float('infinity') for node in graph}
+    distances[start] = 0
+    visited = set()
+    while len(visited) < len(graph):
+        min_node = None
+        for node in graph:
+            if node not in visited:
+                if min_node is None or distances[node] < distances[min_node]:
+                    min_node = node
+        if distances[min_node] == float('infinity'):
+            break
+        for neighbor, weight in graph[min_node].items():
+            new_distance = distances[min_node] + weight
+            if new_distance < distances[neighbor]:
+                distances[neighbor] = new_distance
+        visited.add(min_node)
+    return distances
+
+def longest_increasing_subsequence(arr):
+    n = len(arr)
+    dp = [1] * n
+    for i in range(1, n):
+        for j in range(0, i):
+            if arr[i] > arr[j] and dp[i] < dp[j] + 1:
+                dp[i] = dp[j] + 1
+    maximum = 0
+    for i in range(n):
+        if maximum < dp[i]:
+            maximum = dp[i]
+    return maximum
+
+def knapsack_problem(W, wt, val, n):
+    K = [[0 for _ in range(W + 1)] for _ in range(n + 1)]
+    for i in range(n + 1):
+        for w in range(W + 1):
+            if i == 0 or w == 0:
+                K[i][w] = 0
+            elif wt[i - 1] <= w:
+                K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i - 1][w])
+            else:
+                K[i][w] = K[i - 1][w]
+    return K[n][W]
+
+def coin_change(coins, amount):
+    dp = [float('inf')] * (amount + 1)
+    dp[0] = 0
+    for coin in coins:
+        for x in range(coin, amount + 1):
+            dp[x] = min(dp[x], dp[x - coin] + 1)
+    if dp[amount] != float('inf'):
+        return dp[amount]
+    else:
+        return -1
+
+def edit_distance(word1, word2):
+    m = len(word1)
+    n = len(word2)
+    dp = [[0 for _ in range(n + 1)] for _ in range(m + 1)]
+    for i in range(m + 1):
+        for j in range(n + 1):
+            if i == 0:
+                dp[i][j] = j
+            elif j == 0:
+                dp[i][j] = i
+            elif word1[i - 1] == word2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+            else:
+                dp[i][j] = 1 + min(dp[i][j - 1], dp[i - 1][j], dp[i - 1][j - 1])
+    return dp[m][n]
 
 class BankAccount:
-    def __init__(self, balance):
+    def __init__(self, owner, balance=0.0):
+        self.owner = owner
         self.balance = balance
 
     def deposit(self, amount):
-        self.balance += amount
+        if amount > 0:
+            self.balance += amount
+            return True
+        return False
+
+    def withdraw(self, amount):
+        if 0 < amount <= self.balance:
+            self.balance -= amount
+            return True
+        return False
+
+    def get_balance(self):
         return self.balance
 
-class Point:
+class LibraryBook:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+        self.is_borrowed = False
+
+    def borrow_book(self):
+        if not self.is_borrowed:
+            self.is_borrowed = True
+            return True
+        return False
+
+    def return_book(self):
+        if self.is_borrowed:
+            self.is_borrowed = False
+            return True
+        return False
+
+    def status(self):
+        return "Borrowed" if self.is_borrowed else "Available"
+
+class ShoppingCart:
+    def __init__(self):
+        self.items = {}
+
+    def add_item(self, item_name, price, quantity=1):
+        if item_name in self.items:
+            self.items[item_name]['quantity'] += quantity
+        else:
+            self.items[item_name] = {'price': price, 'quantity': quantity}
+
+    def remove_item(self, item_name):
+        if item_name in self.items:
+            del self.items[item_name]
+
+    def calculate_total(self):
+        total = 0
+        for item in self.items.values():
+            total += item['price'] * item['quantity']
+        return total
+
+class StudentRecord:
+    def __init__(self, student_id, name):
+        self.student_id = student_id
+        self.name = name
+        self.grades = []
+
+    def add_grade(self, grade):
+        if 0 <= grade <= 100:
+            self.grades.append(grade)
+
+    def get_average(self):
+        if not self.grades:
+            return 0
+        total = sum(self.grades)
+        return total / len(self.grades)
+
+    def is_passing(self):
+        return self.get_average() >= 60
+
+class EmployeeHierarchy:
+    def __init__(self, name, position, salary):
+        self.name = name
+        self.position = position
+        self.salary = salary
+        self.subordinates = []
+
+    def add_subordinate(self, employee):
+        self.subordinates.append(employee)
+
+    def remove_subordinate(self, employee_name):
+        for sub in self.subordinates:
+            if sub.name == employee_name:
+                self.subordinates.remove(sub)
+                break
+
+    def get_total_salary_department(self):
+        total = self.salary
+        for sub in self.subordinates:
+            total += sub.get_total_salary_department()
+        return total
+
+def calculate_statistics(data):
+    if not data:
+        return None, None, None
+    n = len(data)
+    mean = sum(data) / n
+    sorted_data = sorted(data)
+    if n % 2 == 0:
+        median = (sorted_data[n//2 - 1] + sorted_data[n//2]) / 2
+    else:
+        median = sorted_data[n//2]
+    freq = {}
+    for item in data:
+        freq[item] = freq.get(item, 0) + 1
+    max_freq = max(freq.values())
+    mode = [k for k, v in freq.items() if v == max_freq]
+    return mean, median, mode
+
+def calculate_variance_and_std(data, sample=True):
+    if len(data) < 2:
+        return 0.0, 0.0
+    n = len(data)
+    mean = sum(data) / n
+    deviations = [(x - mean) ** 2 for x in data]
+    variance = sum(deviations) / (n - 1 if sample else n)
+    std_dev = variance ** 0.5
+    return variance, std_dev
+
+def simple_linear_regression(x_values, y_values):
+    n = len(x_values)
+    sum_x = sum(x_values)
+    sum_y = sum(y_values)
+    sum_xy = sum(x * y for x, y in zip(x_values, y_values))
+    sum_xx = sum(x ** 2 for x in x_values)
+    slope = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x ** 2)
+    intercept = (sum_y - slope * sum_x) / n
+    predicted = [slope * x + intercept for x in x_values]
+    return slope, intercept, predicted
+
+class Vector3D:
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def add(self, other):
+        return Vector3D(self.x + other.x, self.y + other.y, self.z + other.z)
+
+    def dot_product(self, other):
+        return self.x * other.x + self.y * other.y + self.z * other.z
+
+    def cross_product(self, other):
+        return Vector3D(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x
+        )
+
+    def magnitude(self):
+        return (self.x**2 + self.y**2 + self.z**2) ** 0.5
+
+class ComplexNumber:
+    def __init__(self, real, imag):
+        self.real = real
+        self.imag = imag
+
+    def add(self, other):
+        return ComplexNumber(self.real + other.real, self.imag + other.imag)
+
+    def multiply(self, other):
+        real_part = self.real * other.real - self.imag * other.imag
+        imag_part = self.real * other.imag + self.imag * other.real
+        return ComplexNumber(real_part, imag_part)
+
+    def modulus(self):
+        return (self.real**2 + self.imag**2) ** 0.5
+
+    def conjugate(self):
+        return ComplexNumber(self.real, -self.imag)
+
+def moving_average(data, window_size):
+    if window_size <= 0 or window_size > len(data):
+        return []
+    result = []
+    current_sum = sum(data[:window_size])
+    result.append(current_sum / window_size)
+    for i in range(window_size, len(data)):
+        current_sum = current_sum - data[i - window_size] + data[i]
+        result.append(current_sum / window_size)
+    return result
+
+def z_score_normalization(data):
+    n = len(data)
+    if n < 2:
+        return [0.0] * n
+    mean = sum(data) / n
+    variance = sum((x - mean) ** 2 for x in data) / n
+    std_dev = variance ** 0.5
+    if std_dev == 0:
+        return [0.0] * n
+    return [(x - mean) / std_dev for x in data]
+
+def cosine_similarity(vec1, vec2):
+    if len(vec1) != len(vec2):
+        return 0.0
+    dot_product = sum(a * b for a, b in zip(vec1, vec2))
+    mag1 = sum(a ** 2 for a in vec1) ** 0.5
+    mag2 = sum(b ** 2 for b in vec2) ** 0.5
+    if mag1 == 0 or mag2 == 0:
+        return 0.0
+    return dot_product / (mag1 * mag2)
+
+def trapezoidal_rule(func, a, b, n):
+    h = (b - a) / n
+    result = 0.5 * (func(a) + func(b))
+    for i in range(1, n):
+        result += func(a + i * h)
+    result *= h
+    return result
+
+def to_morse_code(text):
+    morse_dict = {
+        'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
+        'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---',
+        'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---',
+        'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
+        'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--',
+        'Z': '--..', '1': '.----', '2': '..---', '3': '...--',
+        '4': '....-', '5': '.....', '6': '-....', '7': '--...',
+        '8': '---..', '9': '----.', '0': '-----', ' ': '/'
+    }
+    result = []
+    for char in text.upper():
+        if char in morse_dict:
+            result.append(morse_dict[char])
+    return " ".join(result)
+
+def simplified_base64_encode(text):
+    b64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    binary_string = "".join([bin(ord(c))[2:].zfill(8) for c in text])
+    padding = (6 - len(binary_string) % 6) % 6
+    binary_string += "0" * padding
+    encoded = ""
+    for i in range(0, len(binary_string), 6):
+        chunk = binary_string[i:i+6]
+        encoded += b64_chars[int(chunk, 2)]
+    pad_chars = "=" * (padding // 2)
+    return encoded + pad_chars
+
+def url_encode(url_string):
+    safe_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~"
+    encoded = ""
+    for char in url_string:
+        if char in safe_chars:
+            encoded += char
+        elif char == ' ':
+            encoded += '+'
+        else:
+            hex_val = hex(ord(char))[2:].upper()
+            encoded += '%' + hex_val.zfill(2)
+    return encoded
+
+def html_escape(text):
+    escape_dict = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;'
+    }
+    result = ""
+    for char in text:
+        if char in escape_dict:
+            result += escape_dict[char]
+        else:
+            result += char
+    return result
+
+def markdown_bold_italic(text):
+    import re
+    text = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', text)
+    text = re.sub(r'__(.*?)__', r'<b>\1</b>', text)
+    text = re.sub(r'\*(.*?)\*', r'<i>\1</i>', text)
+    text = re.sub(r'_(.*?)_', r'<i>\1</i>', text)
+    return text
+
+def word_wrap(text, max_length):
+    words = text.split(' ')
+    lines = []
+    current_line = []
+    current_length = 0
+    for word in words:
+        if current_length + len(word) + len(current_line) <= max_length:
+            current_line.append(word)
+            current_length += len(word)
+        else:
+            lines.append(" ".join(current_line))
+            current_line = [word]
+            current_length = len(word)
+    if current_line:
+        lines.append(" ".join(current_line))
+    return "\n".join(lines)
+
+def vigenere_cipher(text, key, encrypt=True):
+    result = []
+    key_length = len(key)
+    key_as_int = [ord(i.upper()) - 65 for i in key]
+    text_int = [ord(i.upper()) - 65 for i in text if i.isalpha()]
+    char_index = 0
+    for char in text:
+        if char.isalpha():
+            shift = key_as_int[char_index % key_length]
+            if not encrypt:
+                shift = -shift
+            base = 65 if char.isupper() else 97
+            new_char = chr((ord(char) - base + shift) % 26 + base)
+            result.append(new_char)
+            char_index += 1
+        else:
+            result.append(char)
+    return "".join(result)
+
+def rot13_encoder(text):
+    result = ""
+    for char in text:
+        if 'a' <= char <= 'z':
+            result += chr((ord(char) - ord('a') + 13) % 26 + ord('a'))
+        elif 'A' <= char <= 'Z':
+            result += chr((ord(char) - ord('A') + 13) % 26 + ord('A'))
+        else:
+            result += char
+    return result
+
+def mock_tf_idf(documents):
+    tf = []
+    df = {}
+    num_docs = len(documents)
+    for doc in documents:
+        words = doc.split()
+        doc_tf = {}
+        seen = set()
+        for word in words:
+            doc_tf[word] = doc_tf.get(word, 0) + 1 / len(words)
+            if word not in seen:
+                df[word] = df.get(word, 0) + 1
+                seen.add(word)
+        tf.append(doc_tf)
+    import math
+    tfidf = []
+    for doc_tf in tf:
+        doc_tfidf = {}
+        for word, val in doc_tf.items():
+            idf = math.log(num_docs / (1 + df[word]))
+            doc_tfidf[word] = val * idf
+        tfidf.append(doc_tfidf)
+    return tfidf
+
+class TimerContextManager:
+    def __init__(self, name):
+        self.name = name
+        self.start_time = None
+        self.end_time = None
+
+    def __enter__(self):
+        import time
+        self.start_time = time.time()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        import time
+        self.end_time = time.time()
+        duration = self.end_time - self.start_time
+        print(f"Timer {self.name} finished in {duration:.4f} seconds")
+        if exc_type is not None:
+            print(f"Exception occurred: {exc_val}")
+        return False
+
+def retry_decorator(max_retries, delay=1):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            import time
+            attempts = 0
+            while attempts < max_retries:
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    attempts += 1
+                    if attempts >= max_retries:
+                        raise e
+                    time.sleep(delay)
+        return wrapper
+    return decorator
+
+def custom_memoize(func):
+    cache = {}
+    def wrapper(*args):
+        if args in cache:
+            return cache[args]
+        result = func(*args)
+        cache[args] = result
+        return result
+    return wrapper
+
+def generate_primes_yield(limit):
+    count = 0
+    num = 2
+    while count < limit:
+        is_prime = True
+        for i in range(2, int(num ** 0.5) + 1):
+            if num % i == 0:
+                is_prime = False
+                break
+        if is_prime:
+            yield num
+            count += 1
+        num += 1
+
+def chunk_generator(data, chunk_size):
+    for i in range(0, len(data), chunk_size):
+        yield data[i:i + chunk_size]
+
+class SingletonMeta(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
+
+class SubjectObservable:
+    def __init__(self):
+        self._observers = []
+
+    def attach(self, observer):
+        if observer not in self._observers:
+            self._observers.append(observer)
+
+    def detach(self, observer):
+        if observer in self._observers:
+            self._observers.remove(observer)
+
+    def notify(self, message):
+        for observer in self._observers:
+            observer.update(message)
+
+class DeckOfCards:
+    def __init__(self):
+        suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+        self.cards = [f"{r} of {s}" for s in suits for r in ranks]
+
+    def shuffle(self):
+        import random
+        random.shuffle(self.cards)
+
+    def draw_card(self):
+        if len(self.cards) > 0:
+            return self.cards.pop()
+        return None
+
+    def remaining_cards(self):
+        return len(self.cards)
+
+class RPGCharacter:
+    def __init__(self, name, hp, attack, defense):
+        self.name = name
+        self.hp = hp
+        self.attack = attack
+        self.defense = defense
+        self.is_alive = True
+
+    def take_damage(self, damage):
+        actual_damage = max(0, damage - self.defense)
+        self.hp -= actual_damage
+        if self.hp <= 0:
+            self.hp = 0
+            self.is_alive = False
+        return actual_damage
+
+    def strike(self, target):
+        if self.is_alive:
+            return target.take_damage(self.attack)
+        return 0
+
+class TicTacToeBoard:
+    def __init__(self):
+        self.board = [[' ' for _ in range(3)] for _ in range(3)]
+        self.current_player = 'X'
+
+    def make_move(self, row, col):
+        if self.board[row][col] == ' ':
+            self.board[row][col] = self.current_player
+            self.current_player = 'O' if self.current_player == 'X' else 'X'
+            return True
+        return False
+
+    def check_winner(self):
+        for i in range(3):
+            if self.board[i][0] == self.board[i][1] == self.board[i][2] != ' ':
+                return self.board[i][0]
+            if self.board[0][i] == self.board[1][i] == self.board[2][i] != ' ':
+                return self.board[0][i]
+        if self.board[0][0] == self.board[1][1] == self.board[2][2] != ' ':
+            return self.board[0][0]
+        if self.board[0][2] == self.board[1][1] == self.board[2][0] != ' ':
+            return self.board[0][2]
+        return None
+
+def check_sudoku_validity(board):
+    def is_valid_group(group):
+        nums = [n for n in group if n != '.']
+        return len(nums) == len(set(nums))
+    for row in board:
+        if not is_valid_group(row):
+            return False
+    for col in range(9):
+        if not is_valid_group([board[row][col] for row in range(9)]):
+            return False
+    for i in range(0, 9, 3):
+        for j in range(0, 9, 3):
+            square = [board[x][y] for x in range(i, i+3) for y in range(j, j+3)]
+            if not is_valid_group(square):
+                return False
+    return True
+
+def conways_game_of_life_step(grid):
+    rows = len(grid)
+    cols = len(grid[0])
+    new_grid = [[0 for _ in range(cols)] for _ in range(rows)]
+    for r in range(rows):
+        for c in range(cols):
+            live_neighbors = 0
+            for i in range(-1, 2):
+                for j in range(-1, 2):
+                    if i == 0 and j == 0:
+                        continue
+                    nr, nc = r + i, c + j
+                    if 0 <= nr < rows and 0 <= nc < cols:
+                        live_neighbors += grid[nr][nc]
+            if grid[r][c] == 1 and live_neighbors in [2, 3]:
+                new_grid[r][c] = 1
+            elif grid[r][c] == 0 and live_neighbors == 3:
+                new_grid[r][c] = 1
+    return new_grid
+
+class DiceRollerStats:
+    def __init__(self, sides=6):
+        self.sides = sides
+        self.history = []
+
+    def roll(self):
+        import random
+        result = random.randint(1, self.sides)
+        self.history.append(result)
+        return result
+
+    def get_average(self):
+        if not self.history:
+            return 0
+        return sum(self.history) / len(self.history)
+
+    def get_distribution(self):
+        dist = {i: 0 for i in range(1, self.sides + 1)}
+        for roll in self.history:
+            dist[roll] += 1
+        return dist
+
+class TamagotchiPet:
+    def __init__(self, name):
+        self.name = name
+        self.hunger = 50
+        self.happiness = 50
+        self.energy = 50
+
+    def feed(self):
+        self.hunger = max(0, self.hunger - 20)
+        self.energy -= 5
+
+    def play(self):
+        self.happiness = min(100, self.happiness + 20)
+        self.hunger += 10
+        self.energy -= 15
+
+    def sleep(self):
+        self.energy = 100
+        self.hunger += 20
+
+    def is_alive(self):
+        return self.hunger < 100 and self.energy > 0
+
+class InventoryManager:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.items = {}
+
+    def add_item(self, item_id, weight):
+        current_weight = sum(self.items.values())
+        if current_weight + weight <= self.capacity:
+            self.items[item_id] = weight
+            return True
+        return False
+
+    def remove_item(self, item_id):
+        if item_id in self.items:
+            del self.items[item_id]
+            return True
+        return False
+
+    def get_free_space(self):
+        return self.capacity - sum(self.items.values())
+
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end_of_word = False
+
+class TrieTree:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word):
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
+        node.is_end_of_word = True
+
+    def search(self, word):
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                return False
+            node = node.children[char]
+        return node.is_end_of_word
+
+    def starts_with(self, prefix):
+        node = self.root
+        for char in prefix:
+            if char not in node.children:
+                return False
+            node = node.children[char]
+        return True
+
+class LRUCacheMock:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+        self.order = []
+
+    def get(self, key):
+        if key in self.cache:
+            self.order.remove(key)
+            self.order.append(key)
+            return self.cache[key]
+        return -1
+
+    def put(self, key, value):
+        if key in self.cache:
+            self.order.remove(key)
+        elif len(self.cache) >= self.capacity:
+            oldest = self.order.pop(0)
+            del self.cache[oldest]
+        self.cache[key] = value
+        self.order.append(key)
+
+class DisjointSet:
+    def __init__(self, size):
+        self.parent = [i for i in range(size)]
+        self.rank = [0] * size
+
+    def find(self, i):
+        if self.parent[i] == i:
+            return i
+        self.parent[i] = self.find(self.parent[i])
+        return self.parent[i]
+
+    def union(self, i, j):
+        root_i = self.find(i)
+        root_j = self.find(j)
+        if root_i != root_j:
+            if self.rank[root_i] < self.rank[root_j]:
+                self.parent[root_i] = root_j
+            elif self.rank[root_i] > self.rank[root_j]:
+                self.parent[root_j] = root_i
+            else:
+                self.parent[root_j] = root_i
+                self.rank[root_i] += 1
+
+class CircularBuffer:
+    def __init__(self, size):
+        self.buffer = [None] * size
+        self.size = size
+        self.head = 0
+        self.tail = 0
+        self.is_full = False
+
+    def enqueue(self, item):
+        self.buffer[self.tail] = item
+        if self.is_full:
+            self.head = (self.head + 1) % self.size
+        self.tail = (self.tail + 1) % self.size
+        self.is_full = self.tail == self.head
+
+    def dequeue(self):
+        if not self.is_full and self.head == self.tail:
+            return None
+        item = self.buffer[self.head]
+        self.buffer[self.head] = None
+        self.head = (self.head + 1) % self.size
+        self.is_full = False
+        return item
+
+class DoublyLinkedNode:
+    def __init__(self, data):
+        self.data = data
+        self.prev = None
+        self.next = None
+
+class DoublyLinkedList:
+    def __init__(self):
+        self.head = None
+
+    def push(self, new_data):
+        new_node = DoublyLinkedNode(new_data)
+        new_node.next = self.head
+        if self.head is not None:
+            self.head.prev = new_node
+        self.head = new_node
+
+    def append(self, new_data):
+        new_node = DoublyLinkedNode(new_data)
+        if self.head is None:
+            self.head = new_node
+            return
+        last = self.head
+        while last.next:
+            last = last.next
+        last.next = new_node
+        new_node.prev = last
+
+def mock_ini_parser(file_content):
+    config = {}
+    current_section = None
+    lines = file_content.split('\n')
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith(';') or line.startswith('#'):
+            continue
+        if line.startswith('[') and line.endswith(']'):
+            current_section = line[1:-1]
+            config[current_section] = {}
+        elif '=' in line and current_section:
+            key, val = line.split('=', 1)
+            config[current_section][key.strip()] = val.strip()
+    return config
+
+def mock_csv_reader(csv_string, delimiter=','):
+    rows = csv_string.strip().split('\n')
+    if not rows:
+        return []
+    header = [col.strip() for col in rows[0].split(delimiter)]
+    result = []
+    for row in rows[1:]:
+        values = [val.strip() for val in row.split(delimiter)]
+        row_dict = {}
+        for i in range(min(len(header), len(values))):
+            row_dict[header[i]] = values[i]
+        result.append(row_dict)
+    return result
+
+def dictionary_to_mock_json(d, indent=4):
+    def convert(obj, depth):
+        spaces = " " * (depth * indent)
+        if isinstance(obj, str):
+            return f'"{obj}"'
+        elif isinstance(obj, (int, float, bool)):
+            return str(obj).lower() if isinstance(obj, bool) else str(obj)
+        elif obj is None:
+            return "null"
+        elif isinstance(obj, list):
+            items = [convert(item, depth + 1) for item in obj]
+            inner = f",\n{spaces}    ".join(items)
+            return f"[\n{spaces}    {inner}\n{spaces}]"
+        elif isinstance(obj, dict):
+            items = [f'"{k}": {convert(v, depth + 1)}' for k, v in obj.items()]
+            inner = f",\n{spaces}    ".join(items)
+            return f"{{\n{spaces}    {inner}\n{spaces}}}"
+    return convert(d, 0)
+
+class SimpleLogger:
+    def __init__(self, min_level="INFO"):
+        self.levels = {"DEBUG": 1, "INFO": 2, "WARNING": 3, "ERROR": 4}
+        self.min_level = self.levels.get(min_level, 2)
+        self.logs = []
+
+    def _log(self, level, message):
+        if self.levels[level] >= self.min_level:
+            import datetime
+            timestamp = datetime.datetime.now().isoformat()
+            log_entry = f"[{timestamp}] [{level}] {message}"
+            self.logs.append(log_entry)
+            print(log_entry)
+
+    def debug(self, msg): self._log("DEBUG", msg)
+    def info(self, msg): self._log("INFO", msg)
+    def warning(self, msg): self._log("WARNING", msg)
+    def error(self, msg): self._log("ERROR", msg)
+
+def password_strength_checker(password):
+    score = 0
+    if len(password) >= 8: score += 1
+    if len(password) >= 12: score += 1
+    has_lower = False
+    has_upper = False
+    has_digit = False
+    has_special = False
+    for char in password:
+        if char.islower(): has_lower = True
+        elif char.isupper(): has_upper = True
+        elif char.isdigit(): has_digit = True
+        else: has_special = True
+    if has_lower: score += 1
+    if has_upper: score += 1
+    if has_digit: score += 1
+    if has_special: score += 1
+    return score
+
+def is_valid_ipv4(ip_string):
+    parts = ip_string.split('.')
+    if len(parts) != 4:
+        return False
+    for part in parts:
+        if not part.isdigit():
+            return False
+        num = int(part)
+        if num < 0 or num > 255:
+            return False
+        if len(part) > 1 and part[0] == '0':
+            return False
+    return True
+
+def simple_hex_dump(data_bytes, bytes_per_line=16):
+    lines = []
+    for i in range(0, len(data_bytes), bytes_per_line):
+        chunk = data_bytes[i:i+bytes_per_line]
+        hex_part = " ".join([f"{b:02x}" for b in chunk])
+        ascii_part = "".join([chr(b) if 32 <= b <= 126 else "." for b in chunk])
+        hex_part = hex_part.ljust(bytes_per_line * 3 - 1)
+        lines.append(f"{i:08x}  {hex_part}  |{ascii_part}|")
+    return "\n".join(lines)
+
+def is_leap_year_custom(year):
+    if year % 4 == 0:
+        if year % 100 == 0:
+            if year % 400 == 0:
+                return True
+            else:
+                return False
+        else:
+            return True
+    return False
+
+def get_days_in_month(year, month):
+    days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    if month == 2 and is_leap_year_custom(year):
+        return 29
+    return days[month - 1]
+
+class TurnstileFSM:
+    def __init__(self):
+        self.state = "LOCKED"
+        self.coins = 0
+
+    def insert_coin(self):
+        self.coins += 1
+        if self.state == "LOCKED":
+            self.state = "UNLOCKED"
+            return "Unlocking..."
+        return "Already unlocked."
+
+    def push(self):
+        if self.state == "UNLOCKED":
+            self.state = "LOCKED"
+            return "Passing through..."
+        return "Locked. Insert coin."
+
+class PriorityTaskScheduler:
+    def __init__(self):
+        self.queue = []
+
+    def add_task(self, name, priority):
+        self.queue.append({'name': name, 'priority': priority})
+        self.queue.sort(key=lambda x: x['priority'], reverse=True)
+
+    def execute_next(self):
+        if not self.queue:
+            return None
+        task = self.queue.pop(0)
+        return f"Executing {task['name']}"
+
+    def pending_count(self):
+        return len(self.queue)
+
+class TokenBucketRateLimiter:
+    def __init__(self, capacity, fill_rate):
+        self.capacity = capacity
+        self.fill_rate = fill_rate
+        self.tokens = capacity
+        import time
+        self.last_fill = time.time()
+
+    def consume(self, tokens=1):
+        import time
+        now = time.time()
+        elapsed = now - self.last_fill
+        self.tokens = min(self.capacity, self.tokens + elapsed * self.fill_rate)
+        self.last_fill = now
+        if self.tokens >= tokens:
+            self.tokens -= tokens
+            return True
+        return False
+
+class Point2DGeometry:
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
-    def move(self, dx, dy):
+    def distance_to(self, other):
+        return ((self.x - other.x)**2 + (self.y - other.y)**2) ** 0.5
+
+    def midpoint(self, other):
+        return Point2DGeometry((self.x + other.x) / 2, (self.y + other.y) / 2)
+
+    def translate(self, dx, dy):
         self.x += dx
         self.y += dy
 
-class Car:
-    def __init__(self, brand, model):
-        self.brand = brand
-        self.model = model
-        self.is_running = False
+class RectangleAABB:
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
 
-    def start_engine(self):
-        self.is_running = True
+    def intersects(self, other):
+        return not (self.x + self.width < other.x or
+                    other.x + other.width < self.x or
+                    self.y + self.height < other.y or
+                    other.y + other.height < self.y)
 
+    def get_area(self):
+        return self.width * self.height
 
-function bubbleSort(arr) {
+class CircleCollider:
+    def __init__(self, x, y, radius):
+        self.x = x
+        self.y = y
+        self.radius = radius
+
+    def collides_with(self, other):
+        dist_sq = (self.x - other.x)**2 + (self.y - other.y)**2
+        rad_sum_sq = (self.radius + other.radius)**2
+        return dist_sq <= rad_sum_sq
+
+    def get_circumference(self):
+        return 2 * 3.14159 * self.radius
+
+def polygon_area_shoelace(vertices):
+    n = len(vertices)
+    area = 0.0
+    for i in range(n):
+        j = (i + 1) % n
+        area += vertices[i][0] * vertices[j][1]
+        area -= vertices[j][0] * vertices[i][1]
+    return abs(area) / 2.0
+
+class ParticleSimulator:
+    def __init__(self, x, y, vx, vy, mass):
+        self.x = x
+        self.y = y
+        self.vx = vx
+        self.vy = vy
+        self.mass = mass
+
+    def apply_force(self, fx, fy, dt):
+        ax = fx / self.mass
+        ay = fy / self.mass
+        self.vx += ax * dt
+        self.vy += ay * dt
+
+    def update_position(self, dt):
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+
+def rgb_to_hex(r, g, b):
+    r = max(0, min(255, r))
+    g = max(0, min(255, g))
+    b = max(0, min(255, b))
+    return "#{:02x}{:02x}{:02x}".format(r, g, b).upper()
+
+class TemperatureConverter:
+    @staticmethod
+    def c_to_f(celsius):
+        return (celsius * 9/5) + 32
+
+    @staticmethod
+    def f_to_c(fahrenheit):
+        return (fahrenheit - 32) * 5/9
+
+    @staticmethod
+    def c_to_k(celsius):
+        return celsius + 273.15
+
+    @staticmethod
+    def k_to_c(kelvin):
+        return kelvin - 273.15
+
+def k_means_1d_mock(data, k, iterations=10):
+    if not data or k <= 0:
+        return []
+    import random
+    centroids = random.sample(data, k)
+    clusters = []
+    for _ in range(iterations):
+        clusters = [[] for _ in range(k)]
+        for point in data:
+            distances = [abs(point - c) for c in centroids]
+            min_idx = distances.index(min(distances))
+            clusters[min_idx].append(point)
+        new_centroids = []
+        for cluster in clusters:
+            if cluster:
+                new_centroids.append(sum(cluster) / len(cluster))
+            else:
+                new_centroids.append(random.choice(data))
+        centroids = new_centroids
+    return clusters
+
+def rabin_karp_search(text, pattern):
+    n = len(text)
+    m = len(pattern)
+    if m == 0 or n < m:
+        return []
+    p_hash = hash(pattern)
+    results = []
+    for i in range(n - m + 1):
+        window = text[i:i + m]
+        if hash(window) == p_hash:
+            if window == pattern:
+                results.append(i)
+    return results
+
+def lzw_compress_mock(uncompressed):
+    dict_size = 256
+    dictionary = {chr(i): i for i in range(dict_size)}
+    w = ""
+    result = []
+    for c in uncompressed:
+        wc = w + c
+        if wc in dictionary:
+            w = wc
+        else:
+            result.append(dictionary[w])
+            dictionary[wc] = dict_size
+            dict_size += 1
+            w = c
+    if w:
+        result.append(dictionary[w])
+    return result
+
+class PIDControllerMock:
+    def __init__(self, kp, ki, kd):
+        self.kp = kp
+        self.ki = ki
+        self.kd = kd
+        self.prev_error = 0
+        self.integral = 0
+
+    def compute(self, setpoint, measured_value, dt):
+        error = setpoint - measured_value
+        self.integral += error * dt
+        derivative = (error - self.prev_error) / dt
+        output = (self.kp * error) + (self.ki * self.integral) + (self.kd * derivative)
+        self.prev_error = error
+        return output
+
+def calculate_elo_rating(rating_a, rating_b, score_a, k=32):
+    expected_a = 1 / (1 + 10 ** ((rating_b - rating_a) / 400))
+    expected_b = 1 / (1 + 10 ** ((rating_a - rating_b) / 400))
+    score_b = 1 - score_a
+    new_rating_a = rating_a + k * (score_a - expected_a)
+    new_rating_b = rating_b + k * (score_b - expected_b)
+    return new_rating_a, new_rating_b
+
+def luhn_credit_card_validator(card_number):
+    card_number = card_number.replace(" ", "")
+    if not card_number.isdigit():
+        return False
+    digits = [int(x) for x in card_number]
+    odd_digits = digits[-1::-2]
+    even_digits = digits[-2::-2]
+    checksum = 0
+    checksum += sum(odd_digits)
+    for d in even_digits:
+        checksum += sum([int(x) for x in str(d * 2)])
+    return checksum % 10 == 0
+
+class PaginationHelper:
+    def __init__(self, collection, items_per_page):
+        self.collection = collection
+        self.items_per_page = items_per_page
+
+    def item_count(self):
+        return len(self.collection)
+
+    def page_count(self):
+        import math
+        return math.ceil(len(self.collection) / self.items_per_page)
+
+    def page_item_count(self, page_index):
+        if page_index < 0 or page_index >= self.page_count():
+            return -1
+        if page_index == self.page_count() - 1:
+            rem = len(self.collection) % self.items_per_page
+            return rem if rem != 0 else self.items_per_page
+        return self.items_per_page
+
+function debounce(func, wait, immediate = false) {
+    let timeout;
+    return function() {
+        const context = this;
+        const args = arguments;
+        const callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            timeout = null;
+            if (!immediate) {
+                func.apply(context, args);
+            }
+        }, wait);
+        if (callNow) {
+            func.apply(context, args);
+        }
+    };
+}
+
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => {
+                inThrottle = false;
+            }, limit);
+        }
+    };
+}
+
+function deepClone(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+    if (obj instanceof Date) {
+        return new Date(obj.getTime());
+    }
+    if (obj instanceof Array) {
+        let copy = [];
+        for (let i = 0; i < obj.length; i++) {
+            copy[i] = deepClone(obj[i]);
+        }
+        return copy;
+    }
+    if (obj instanceof Object) {
+        let copy = {};
+        for (let attr in obj) {
+            if (obj.hasOwnProperty(attr)) {
+                copy[attr] = deepClone(obj[attr]);
+            }
+        }
+        return copy;
+    }
+    throw new Error("Unable to copy obj!");
+}
+
+class EventEmitter {
+    constructor() {
+        this.events = {};
+    }
+
+    on(event, listener) {
+        if (!this.events[event]) {
+            this.events[event] = [];
+        }
+        this.events[event].push(listener);
+    }
+
+    emit(event, ...args) {
+        if (this.events[event]) {
+            this.events[event].forEach(listener => {
+                listener.apply(this, args);
+            });
+        }
+    }
+
+    off(event, listenerToRemove) {
+        if (!this.events[event]) return;
+        this.events[event] = this.events[event].filter(
+            listener => listener !== listenerToRemove
+        );
+    }
+}
+
+function heapSort(arr) {
     let n = arr.length;
-    for (let i = 0; i < n; i++) {
-        for (let j = 0; j < n - i - 1; j++) {
-            if (arr[j] > arr[j + 1]) {
-                let temp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = temp;
+    for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+    for (let i = n - 1; i > 0; i--) {
+        let temp = arr[0];
+        arr[0] = arr[i];
+        arr[i] = temp;
+        heapify(arr, i, 0);
+    }
+    return arr;
+    
+    function heapify(arr, n, i) {
+        let largest = i;
+        let l = 2 * i + 1;
+        let r = 2 * i + 2;
+        if (l < n && arr[l] > arr[largest]) largest = l;
+        if (r < n && arr[r] > arr[largest]) largest = r;
+        if (largest !== i) {
+            let swap = arr[i];
+            arr[i] = arr[largest];
+            arr[largest] = swap;
+            heapify(arr, n, largest);
+        }
+    }
+}
+
+function shellSort(arr) {
+    let n = arr.length;
+    for (let gap = Math.floor(n / 2); gap > 0; gap = Math.floor(gap / 2)) {
+        for (let i = gap; i < n; i += 1) {
+            let temp = arr[i];
+            let j;
+            for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
+                arr[j] = arr[j - gap];
+            }
+            arr[j] = temp;
+        }
+    }
+    return arr;
+}
+
+function binarySearchRecursive(arr, l, r, x) {
+    if (r >= l) {
+        let mid = l + Math.floor((r - l) / 2);
+        if (arr[mid] === x) {
+            return mid;
+        }
+        if (arr[mid] > x) {
+            return binarySearchRecursive(arr, l, mid - 1, x);
+        }
+        return binarySearchRecursive(arr, mid + 1, r, x);
+    }
+    return -1;
+}
+
+function jumpSearch(arr, x) {
+    let n = arr.length;
+    let step = Math.floor(Math.sqrt(n));
+    let prev = 0;
+    while (arr[Math.min(step, n) - 1] < x) {
+        prev = step;
+        step += Math.floor(Math.sqrt(n));
+        if (prev >= n) {
+            return -1;
+        }
+    }
+    while (arr[prev] < x) {
+        prev++;
+        if (prev === Math.min(step, n)) {
+            return -1;
+        }
+    }
+    if (arr[prev] === x) {
+        return prev;
+    }
+    return -1;
+}
+
+function exponentialSearch(arr, x) {
+    let n = arr.length;
+    if (arr[0] === x) {
+        return 0;
+    }
+    let i = 1;
+    while (i < n && arr[i] <= x) {
+        i = i * 2;
+    }
+    let l = Math.floor(i / 2);
+    let r = Math.min(i, n - 1);
+    while (l <= r) {
+        let mid = l + Math.floor((r - l) / 2);
+        if (arr[mid] === x) return mid;
+        if (arr[mid] < x) l = mid + 1;
+        else r = mid - 1;
+    }
+    return -1;
+}
+
+function matrixMultiplication(a, b) {
+    let aNumRows = a.length;
+    let aNumCols = a[0].length;
+    let bNumCols = b[0].length;
+    let m = new Array(aNumRows);
+    for (let r = 0; r < aNumRows; ++r) {
+        m[r] = new Array(bNumCols);
+        for (let c = 0; c < bNumCols; ++c) {
+            m[r][c] = 0;
+            for (let i = 0; i < aNumCols; ++i) {
+                m[r][c] += a[r][i] * b[i][c];
             }
         }
     }
-    return arr;
+    return m;
 }
 
-function selectionSort(arr) {
-    for (let i = 0; i < arr.length; i++) {
-        let minIdx = i;
-        for (let j = i + 1; j < arr.length; j++) {
-            if (arr[minIdx] > arr[j]) {
-                minIdx = j;
+function sieveOfEratosthenes(max) {
+    let sieve = new Array(max + 1).fill(true);
+    sieve[0] = false;
+    sieve[1] = false;
+    for (let p = 2; p * p <= max; p++) {
+        if (sieve[p] === true) {
+            for (let i = p * p; i <= max; i += p) {
+                sieve[i] = false;
             }
         }
-        let temp = arr[i];
-        arr[i] = arr[minIdx];
-        arr[minIdx] = temp;
     }
-    return arr;
-}
-
-function insertionSort(arr) {
-    for (let i = 1; i < arr.length; i++) {
-        let key = arr[i];
-        let j = i - 1;
-        while (j >= 0 && arr[j] > key) {
-            arr[j + 1] = arr[j];
-            j = j - 1;
+    let primes = [];
+    for (let p = 2; p <= max; p++) {
+        if (sieve[p]) {
+            primes.push(p);
         }
-        arr[j + 1] = key;
     }
-    return arr;
+    return primes;
 }
 
-function quickSort(arr) {
-    if (arr.length <= 1) {
-        return arr;
+function gcdExtended(a, b) {
+    if (a === 0) {
+        return [b, 0, 1];
     }
-    let pivot = arr[Math.floor(arr.length / 2)];
-    let left = arr.filter(x => x < pivot);
-    let middle = arr.filter(x => x === pivot);
-    let right = arr.filter(x => x > pivot);
-    return quickSort(left).concat(middle, quickSort(right));
+    let result = gcdExtended(b % a, a);
+    let gcd = result[0];
+    let x1 = result[1];
+    let y1 = result[2];
+    let x = y1 - Math.floor(b / a) * x1;
+    let y = x1;
+    return [gcd, x, y];
 }
 
-function mergeSort(arr) {
-    if (arr.length <= 1) {
-        return arr;
+function pascalTriangle(numRows) {
+    let triangle = [];
+    if (numRows === 0) {
+        return triangle;
     }
-    let mid = Math.floor(arr.length / 2);
-    let left = arr.slice(0, mid);
-    let right = arr.slice(mid);
-    return mergeSort(left).concat(mergeSort(right));
+    triangle.push([1]);
+    for (let i = 1; i < numRows; i++) {
+        let prevRow = triangle[i - 1];
+        let newRow = [];
+        newRow.push(1);
+        for (let j = 1; j < prevRow.length; j++) {
+            newRow.push(prevRow[j - 1] + prevRow[j]);
+        }
+        newRow.push(1);
+        triangle.push(newRow);
+    }
+    return triangle;
 }
 
-function factorial(n) {
-    if (n === 0 || n === 1) {
-        return 1;
+function baseConverter(decNumber, base) {
+    let remStack = [];
+    let rem;
+    let baseString = '';
+    let digits = '0123456789ABCDEF';
+    while (decNumber > 0) {
+        rem = Math.floor(decNumber % base);
+        remStack.push(rem);
+        decNumber = Math.floor(decNumber / base);
     }
-    return n * factorial(n - 1);
+    while (remStack.length > 0) {
+        baseString += digits[remStack.pop()];
+    }
+    return baseString || '0';
 }
 
-function fibonacci(n) {
-    let a = 0, b = 1, temp;
-    for (let i = 0; i < n; i++) {
-        temp = a;
-        a = b;
-        b = temp + b;
+class Vector3D {
+    constructor(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
-    return a;
+
+    add(other) {
+        return new Vector3D(this.x + other.x, this.y + other.y, this.z + other.z);
+    }
+
+    dotProduct(other) {
+        return this.x * other.x + this.y * other.y + this.z * other.z;
+    }
+
+    crossProduct(other) {
+        return new Vector3D(
+            this.y * other.z - this.z * other.y,
+            this.z * other.x - this.x * other.z,
+            this.x * other.y - this.y * other.x
+        );
+    }
+
+    magnitude() {
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
 }
 
-function gcd(a, b) {
-    while (b !== 0) {
-        let temp = b;
-        b = a % b;
-        a = temp;
+class ComplexNumber {
+    constructor(real, imag) {
+        this.real = real;
+        this.imag = imag;
     }
-    return a;
+
+    add(other) {
+        return new ComplexNumber(this.real + other.real, this.imag + other.imag);
+    }
+
+    multiply(other) {
+        let r = this.real * other.real - this.imag * other.imag;
+        let i = this.real * other.imag + this.imag * other.real;
+        return new ComplexNumber(r, i);
+    }
+
+    modulus() {
+        return Math.sqrt(this.real * this.real + this.imag * this.imag);
+    }
+
+    conjugate() {
+        return new ComplexNumber(this.real, -this.imag);
+    }
 }
 
-function isPrime(n) {
-    if (n <= 1) return false;
-    for (let i = 2; i <= Math.sqrt(n); i++) {
-        if (n % i === 0) return false;
+function movingAverage(data, windowSize) {
+    let result = [];
+    if (data.length < windowSize || windowSize <= 0) {
+        return result;
     }
-    return true;
-}
-
-function power(base, exp) {
-    let result = 1;
-    for (let i = 0; i < exp; i++) {
-        result *= base;
+    let sum = 0;
+    for (let i = 0; i < windowSize; i++) {
+        sum += data[i];
+    }
+    result.push(sum / windowSize);
+    for (let i = windowSize; i < data.length; i++) {
+        sum = sum - data[i - windowSize] + data[i];
+        result.push(sum / windowSize);
     }
     return result;
 }
 
-function reverseArray(arr) {
-    let reversed = [];
-    for (let i = arr.length - 1; i >= 0; i--) {
-        reversed.push(arr[i]);
+function zScoreNormalization(data) {
+    let n = data.length;
+    if (n < 2) return new Array(n).fill(0);
+    let sum = data.reduce((a, b) => a + b, 0);
+    let mean = sum / n;
+    let varianceSum = 0;
+    for (let i = 0; i < n; i++) {
+        varianceSum += Math.pow(data[i] - mean, 2);
     }
-    return reversed;
+    let stdDev = Math.sqrt(varianceSum / n);
+    let result = [];
+    for (let i = 0; i < n; i++) {
+        if (stdDev === 0) result.push(0);
+        else result.push((data[i] - mean) / stdDev);
+    }
+    return result;
 }
 
-function filterEven(arr) {
-    let evens = [];
-    for (let i = 0; i < arr.length; i++) {
-        if (arr[i] % 2 === 0) {
-            evens.push(arr[i]);
+function cosineSimilarity(vec1, vec2) {
+    if (vec1.length !== vec2.length) return 0.0;
+    let dotProduct = 0.0;
+    let mag1 = 0.0;
+    let mag2 = 0.0;
+    for (let i = 0; i < vec1.length; i++) {
+        dotProduct += vec1[i] * vec2[i];
+        mag1 += vec1[i] * vec1[i];
+        mag2 += vec2[i] * vec2[i];
+    }
+    mag1 = Math.sqrt(mag1);
+    mag2 = Math.sqrt(mag2);
+    if (mag1 === 0 || mag2 === 0) {
+        return 0.0;
+    }
+    return dotProduct / (mag1 * mag2);
+}
+
+function groupAnagrams(strs) {
+    let map = new Map();
+    for (let i = 0; i < strs.length; i++) {
+        let str = strs[i];
+        let sortedStr = str.split('').sort().join('');
+        if (!map.has(sortedStr)) {
+            map.set(sortedStr, []);
+        }
+        map.get(sortedStr).push(str);
+    }
+    let result = [];
+    map.forEach(value => {
+        result.push(value);
+    });
+    return result;
+}
+
+function compressString(str) {
+    if (!str || str.length === 0) return "";
+    let compressed = "";
+    let count = 1;
+    for (let i = 1; i < str.length; i++) {
+        if (str[i] === str[i - 1]) {
+            count++;
+        } else {
+            compressed += str[i - 1] + count;
+            count = 1;
         }
     }
-    return evens;
+    compressed += str[str.length - 1] + count;
+    if (compressed.length < str.length) {
+        return compressed;
+    }
+    return str;
 }
 
-function findMax(arr) {
-    if (arr.length === 0) return null;
-    let maxVal = arr[0];
-    for (let i = 1; i < arr.length; i++) {
-        if (arr[i] > maxVal) {
-            maxVal = arr[i];
+function caesarCipher(str, shift) {
+    let result = '';
+    for (let i = 0; i < str.length; i++) {
+        let charCode = str.charCodeAt(i);
+        if (charCode >= 65 && charCode <= 90) {
+            result += String.fromCharCode(((charCode - 65 + shift) % 26) + 65);
+        } else if (charCode >= 97 && charCode <= 122) {
+            result += String.fromCharCode(((charCode - 97 + shift) % 26) + 97);
+        } else {
+            result += str.charAt(i);
         }
     }
-    return maxVal;
+    return result;
 }
 
-function sumArray(arr) {
-    let total = 0;
-    for (let i = 0; i < arr.length; i++) {
-        total += arr[i];
-    }
-    return total;
-}
-
-function removeDuplicates(arr) {
-    let unique = [];
-    for (let i = 0; i < arr.length; i++) {
-        if (unique.indexOf(arr[i]) === -1) {
-            unique.push(arr[i]);
+function vigenereCipher(text, key, encrypt = true) {
+    let result = "";
+    let j = 0;
+    for (let i = 0; i < text.length; i++) {
+        let c = text.charAt(i);
+        if (c.match(/[a-z]/i)) {
+            let code = text.charCodeAt(i);
+            let isUpperCase = (code >= 65 && code <= 90);
+            let shift = key.charCodeAt(j % key.length) - (key.charAt(j % key.length).toUpperCase() === key.charAt(j % key.length) ? 65 : 97);
+            if (!encrypt) shift = -shift;
+            let base = isUpperCase ? 65 : 97;
+            let newCode = ((code - base + shift) % 26 + 26) % 26 + base;
+            result += String.fromCharCode(newCode);
+            j++;
+        } else {
+            result += c;
         }
     }
-    return unique;
+    return result;
 }
 
-class Person {
-    constructor(name, age) {
+function longestCommonPrefix(strs) {
+    if (strs.length === 0) return "";
+    let prefix = strs[0];
+    for (let i = 1; i < strs.length; i++) {
+        while (strs[i].indexOf(prefix) !== 0) {
+            prefix = prefix.substring(0, prefix.length - 1);
+            if (prefix === "") {
+                return "";
+            }
+        }
+    }
+    return prefix;
+}
+
+function toMorseCode(text) {
+    const dict = {
+        'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
+        'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---',
+        'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---',
+        'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
+        'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--',
+        'Z': '--..', '1': '.----', '2': '..---', '3': '...--',
+        '4': '....-', '5': '.....', '6': '-....', '7': '--...',
+        '8': '---..', '9': '----.', '0': '-----', ' ': '/'
+    };
+    let upperText = text.toUpperCase();
+    let result = [];
+    for (let i = 0; i < upperText.length; i++) {
+        let char = upperText[i];
+        if (dict[char]) {
+            result.push(dict[char]);
+        }
+    }
+    return result.join(' ');
+}
+
+function htmlEscape(str) {
+    const escapeMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+        '/': '&#x2F;',
+        '`': '&#x60;',
+        '=': '&#x3D;'
+    };
+    let result = '';
+    for (let i = 0; i < str.length; i++) {
+        let char = str[i];
+        if (escapeMap[char]) {
+            result += escapeMap[char];
+        } else {
+            result += char;
+        }
+    }
+    return result;
+}
+
+function wordWrap(text, maxLen) {
+    let words = text.split(' ');
+    let lines = [];
+    let currentLine = '';
+    for (let i = 0; i < words.length; i++) {
+        let word = words[i];
+        if (currentLine.length + word.length + 1 > maxLen) {
+            lines.push(currentLine.trim());
+            currentLine = word + ' ';
+        } else {
+            currentLine += word + ' ';
+        }
+    }
+    if (currentLine.trim().length > 0) {
+        lines.push(currentLine.trim());
+    }
+    return lines.join('\n');
+}
+
+class LinkedListNode {
+    constructor(val) {
+        this.val = val;
+        this.next = null;
+    }
+}
+
+class LinkedList {
+    constructor() {
+        this.head = null;
+    }
+
+    add(val) {
+        let newNode = new LinkedListNode(val);
+        if (!this.head) {
+            this.head = newNode;
+            return;
+        }
+        let current = this.head;
+        while (current.next) {
+            current = current.next;
+        }
+        current.next = newNode;
+    }
+
+    reverse() {
+        let prev = null;
+        let current = this.head;
+        let next = null;
+        while (current !== null) {
+            next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+        this.head = prev;
+    }
+}
+
+function detectCycleLinkedList(head) {
+    if (!head || !head.next) {
+        return false;
+    }
+    let slow = head;
+    let fast = head;
+    while (fast !== null && fast.next !== null) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow === fast) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function mergeSortedLinkedLists(l1, l2) {
+    let dummy = new LinkedListNode(0);
+    let current = dummy;
+    while (l1 !== null && l2 !== null) {
+        if (l1.val < l2.val) {
+            current.next = l1;
+            l1 = l1.next;
+        } else {
+            current.next = l2;
+            l2 = l2.next;
+        }
+        current = current.next;
+    }
+    if (l1 !== null) {
+        current.next = l1;
+    } else if (l2 !== null) {
+        current.next = l2;
+    }
+    return dummy.next;
+}
+
+class Stack {
+    constructor() {
+        this.items = [];
+    }
+
+    push(element) {
+        this.items.push(element);
+    }
+
+    pop() {
+        if (this.items.length === 0) return "Underflow";
+        return this.items.pop();
+    }
+
+    peek() {
+        if (this.items.length === 0) return "No elements in Stack";
+        return this.items[this.items.length - 1];
+    }
+
+    isEmpty() {
+        return this.items.length === 0;
+    }
+}
+
+class Queue {
+    constructor() {
+        this.items = [];
+    }
+
+    enqueue(element) {
+        this.items.push(element);
+    }
+
+    dequeue() {
+        if (this.isEmpty()) return "Underflow";
+        return this.items.shift();
+    }
+
+    front() {
+        if (this.isEmpty()) return "No elements in Queue";
+        return this.items[0];
+    }
+
+    isEmpty() {
+        return this.items.length === 0;
+    }
+}
+
+class TrieNode {
+    constructor() {
+        this.children = {};
+        this.isEndOfWord = false;
+    }
+}
+
+class Trie {
+    constructor() {
+        this.root = new TrieNode();
+    }
+
+    insert(word) {
+        let current = this.root;
+        for (let i = 0; i < word.length; i++) {
+            let ch = word[i];
+            if (!current.children[ch]) {
+                current.children[ch] = new TrieNode();
+            }
+            current = current.children[ch];
+        }
+        current.isEndOfWord = true;
+    }
+
+    search(word) {
+        let current = this.root;
+        for (let i = 0; i < word.length; i++) {
+            let ch = word[i];
+            if (!current.children[ch]) {
+                return false;
+            }
+            current = current.children[ch];
+        }
+        return current.isEndOfWord;
+    }
+}
+
+class LRUCache {
+    constructor(capacity) {
+        this.capacity = capacity;
+        this.cache = new Map();
+    }
+
+    get(key) {
+        if (!this.cache.has(key)) return -1;
+        let val = this.cache.get(key);
+        this.cache.delete(key);
+        this.cache.set(key, val);
+        return val;
+    }
+
+    put(key, value) {
+        if (this.cache.has(key)) {
+            this.cache.delete(key);
+        }
+        this.cache.set(key, value);
+        if (this.cache.size > this.capacity) {
+            let firstKey = this.cache.keys().next().value;
+            this.cache.delete(firstKey);
+        }
+    }
+}
+
+class CircularBuffer {
+    constructor(size) {
+        this.buffer = new Array(size);
+        this.size = size;
+        this.head = 0;
+        this.tail = 0;
+        this.isFull = false;
+    }
+
+    enqueue(item) {
+        this.buffer[this.tail] = item;
+        if (this.isFull) {
+            this.head = (this.head + 1) % this.size;
+        }
+        this.tail = (this.tail + 1) % this.size;
+        this.isFull = this.head === this.tail;
+    }
+
+    dequeue() {
+        if (!this.isFull && this.head === this.tail) {
+            return null;
+        }
+        let item = this.buffer[this.head];
+        this.buffer[this.head] = null;
+        this.head = (this.head + 1) % this.size;
+        this.isFull = false;
+        return item;
+    }
+}
+
+class DisjointSet {
+    constructor(size) {
+        this.parent = new Array(size);
+        this.rank = new Array(size).fill(0);
+        for (let i = 0; i < size; i++) {
+            this.parent[i] = i;
+        }
+    }
+
+    find(i) {
+        if (this.parent[i] === i) {
+            return i;
+        }
+        this.parent[i] = this.find(this.parent[i]);
+        return this.parent[i];
+    }
+
+    union(i, j) {
+        let rootI = this.find(i);
+        let rootJ = this.find(j);
+        if (rootI !== rootJ) {
+            if (this.rank[rootI] < this.rank[rootJ]) {
+                this.parent[rootI] = rootJ;
+            } else if (this.rank[rootI] > this.rank[rootJ]) {
+                this.parent[rootJ] = rootI;
+            } else {
+                this.parent[rootJ] = rootI;
+                this.rank[rootI]++;
+            }
+        }
+    }
+}
+
+class TicTacToe {
+    constructor() {
+        this.board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']];
+        this.currentPlayer = 'X';
+    }
+
+    makeMove(row, col) {
+        if (this.board[row][col] === ' ') {
+            this.board[row][col] = this.currentPlayer;
+            this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+            return true;
+        }
+        return false;
+    }
+
+    checkWinner() {
+        for (let i = 0; i < 3; i++) {
+            if (this.board[i][0] === this.board[i][1] && this.board[i][1] === this.board[i][2] && this.board[i][0] !== ' ') return this.board[i][0];
+            if (this.board[0][i] === this.board[1][i] && this.board[1][i] === this.board[2][i] && this.board[0][i] !== ' ') return this.board[0][i];
+        }
+        if (this.board[0][0] === this.board[1][1] && this.board[1][1] === this.board[2][2] && this.board[0][0] !== ' ') return this.board[0][0];
+        if (this.board[0][2] === this.board[1][1] && this.board[1][1] === this.board[2][0] && this.board[0][2] !== ' ') return this.board[0][2];
+        return null;
+    }
+}
+
+function conwaysGameOfLifeStep(grid) {
+    let rows = grid.length;
+    let cols = grid[0].length;
+    let nextGrid = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            let liveNeighbors = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (i === 0 && j === 0) continue;
+                    let nr = r + i;
+                    let nc = c + j;
+                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                        liveNeighbors += grid[nr][nc];
+                    }
+                }
+            }
+            if (grid[r][c] === 1 && (liveNeighbors === 2 || liveNeighbors === 3)) {
+                nextGrid[r][c] = 1;
+            } else if (grid[r][c] === 0 && liveNeighbors === 3) {
+                nextGrid[r][c] = 1;
+            }
+        }
+    }
+    return nextGrid;
+}
+
+class RPGCharacter {
+    constructor(name, hp, attack, defense) {
         this.name = name;
-        this.age = age;
+        this.hp = hp;
+        this.attack = attack;
+        this.defense = defense;
+        this.isAlive = true;
     }
 
-    greet() {
-        return "Hello, my name is " + this.name;
+    takeDamage(damage) {
+        let actualDamage = Math.max(0, damage - this.defense);
+        this.hp -= actualDamage;
+        if (this.hp <= 0) {
+            this.hp = 0;
+            this.isAlive = false;
+        }
+        return actualDamage;
+    }
+
+    strike(target) {
+        if (this.isAlive) {
+            return target.takeDamage(this.attack);
+        }
+        return 0;
     }
 }
 
-class Rectangle {
-    constructor(width, height) {
-        this.width = width;
-        this.height = height;
+class DiceRoller {
+    constructor(sides = 6) {
+        this.sides = sides;
+        this.history = [];
     }
 
-    area() {
-        return this.width * this.height;
+    roll() {
+        let result = Math.floor(Math.random() * this.sides) + 1;
+        this.history.push(result);
+        return result;
+    }
+
+    getAverage() {
+        if (this.history.length === 0) return 0;
+        let sum = this.history.reduce((a, b) => a + b, 0);
+        return sum / this.history.length;
+    }
+
+    clearHistory() {
+        this.history = [];
     }
 }
 
-class BankAccount {
-    constructor(balance) {
-        this.balance = balance;
+class Tamagotchi {
+    constructor(name) {
+        this.name = name;
+        this.hunger = 50;
+        this.happiness = 50;
+        this.energy = 50;
     }
 
-    deposit(amount) {
-        this.balance += amount;
-        return this.balance;
+    feed() {
+        this.hunger = Math.max(0, this.hunger - 20);
+        this.energy -= 5;
+    }
+
+    play() {
+        this.happiness = Math.min(100, this.happiness + 20);
+        this.hunger += 10;
+        this.energy -= 15;
+    }
+
+    sleep() {
+        this.energy = 100;
+        this.hunger += 20;
+    }
+
+    isAlive() {
+        return this.hunger < 100 && this.energy > 0;
     }
 }
 
-class Point {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
+function passwordStrengthChecker(password) {
+    let score = 0;
+    if (!password) return score;
+    if (password.length >= 8) score += 1;
+    if (password.length >= 12) score += 1;
+    let hasLower = /[a-z]/.test(password);
+    let hasUpper = /[A-Z]/.test(password);
+    let hasDigit = /[0-9]/.test(password);
+    let hasSpecial = /[^a-zA-Z0-9]/.test(password);
+    if (hasLower) score += 1;
+    if (hasUpper) score += 1;
+    if (hasDigit) score += 1;
+    if (hasSpecial) score += 1;
+    return score;
+}
+
+function isValidIPv4(ip) {
+    if (typeof ip !== 'string') return false;
+    let parts = ip.split('.');
+    if (parts.length !== 4) return false;
+    for (let i = 0; i < parts.length; i++) {
+        let part = parts[i];
+        if (!/^\d+$/.test(part)) return false;
+        let num = parseInt(part, 10);
+        if (num < 0 || num > 255) return false;
+        if (part.length > 1 && part[0] === '0') return false;
+    }
+    return true;
+}
+
+function rgbToHex(r, g, b) {
+    function componentToHex(c) {
+        let hex = c.toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+    }
+    r = Math.max(0, Math.min(255, r));
+    g = Math.max(0, Math.min(255, g));
+    b = Math.max(0, Math.min(255, b));
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+class TemperatureConverter {
+    static celsiusToFahrenheit(c) {
+        return (c * 9/5) + 32;
     }
 
-    move(dx, dy) {
-        this.x += dx;
-        this.y += dy;
+    static fahrenheitToCelsius(f) {
+        return (f - 32) * 5/9;
+    }
+
+    static celsiusToKelvin(c) {
+        return c + 273.15;
+    }
+
+    static kelvinToCelsius(k) {
+        return k - 273.15;
     }
 }
 
-class Car {
-    constructor(brand, model) {
-        this.brand = brand;
-        this.model = model;
-        this.isRunning = false;
+function luhnValidator(cardNumber) {
+    let value = cardNumber.replace(/\D/g, '');
+    let sum = 0;
+    let isEven = false;
+    for (let n = value.length - 1; n >= 0; n--) {
+        let digit = parseInt(value.charAt(n), 10);
+        if (isEven) {
+            digit *= 2;
+            if (digit > 9) {
+                digit -= 9;
+            }
+        }
+        sum += digit;
+        isEven = !isEven;
+    }
+    return (sum % 10) === 0;
+}
+
+class PaginationHelper {
+    constructor(collection, itemsPerPage) {
+        this.collection = collection;
+        this.itemsPerPage = itemsPerPage;
     }
 
-    startEngine() {
-        this.isRunning = true;
+    itemCount() {
+        return this.collection.length;
     }
+
+    pageCount() {
+        return Math.ceil(this.collection.length / this.itemsPerPage);
+    }
+
+    pageItemCount(pageIndex) {
+        let totalPages = this.pageCount();
+        if (pageIndex < 0 || pageIndex >= totalPages) {
+            return -1;
+        }
+        if (pageIndex === totalPages - 1) {
+            let rem = this.collection.length % this.itemsPerPage;
+            return rem === 0 ? this.itemsPerPage : rem;
+        }
+        return this.itemsPerPage;
+    }
+}
+
+function kMeans1D(data, k, maxIterations = 10) {
+    if (data.length === 0 || k <= 0) return [];
+    let centroids = [];
+    for (let i = 0; i < k; i++) {
+        centroids.push(data[Math.floor(Math.random() * data.length)]);
+    }
+    let clusters = [];
+    for (let iter = 0; iter < maxIterations; iter++) {
+        clusters = Array.from({length: k}, () => []);
+        for (let i = 0; i < data.length; i++) {
+            let point = data[i];
+            let minDist = Infinity;
+            let closestIdx = 0;
+            for (let j = 0; j < k; j++) {
+                let dist = Math.abs(point - centroids[j]);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closestIdx = j;
+                }
+            }
+            clusters[closestIdx].push(point);
+        }
+        for (let j = 0; j < k; j++) {
+            if (clusters[j].length > 0) {
+                let sum = clusters[j].reduce((a, b) => a + b, 0);
+                centroids[j] = sum / clusters[j].length;
+            }
+        }
+    }
+    return clusters;
+}
+
+class PIDController {
+    constructor(kp, ki, kd) {
+        this.kp = kp;
+        this.ki = ki;
+        this.kd = kd;
+        this.prevError = 0;
+        this.integral = 0;
+    }
+
+    compute(setpoint, measuredValue, dt) {
+        let error = setpoint - measuredValue;
+        this.integral += error * dt;
+        let derivative = (error - this.prevError) / dt;
+        let output = (this.kp * error) + (this.ki * this.integral) + (this.kd * derivative);
+        this.prevError = error;
+        return output;
+    }
+}
+
+function advancedCurry(fn) {
+  return function curried(...args) {
+    if (args.length >= fn.length) {
+      return fn.apply(this, args);
+    } else {
+      return function(...args2) {
+        return curried.apply(this, args.concat(args2));
+      };
+    }
+  };
+}
+
+function functionCompose(...fns) {
+  if (fns.length === 0) {
+    return arg => arg;
+  }
+  if (fns.length === 1) {
+    return fns[0];
+  }
+  return fns.reduce((a, b) => (...args) => a(b(...args)));
+}
+
+function memoizeWithTTL(fn, ttl = 60000) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    const now = Date.now();
+    if (cache.has(key)) {
+      const { value, expiry } = cache.get(key);
+      if (now < expiry) {
+        return value;
+      }
+      cache.delete(key);
+    }
+    const result = fn.apply(this, args);
+    cache.set(key, { value: result, expiry: now + ttl });
+    return result;
+  };
+}
+
+class AsyncMutex {
+  constructor() {
+    this.locked = false;
+    this.queue = [];
+  }
+  lock() {
+    return new Promise(resolve => {
+      if (!this.locked) {
+        this.locked = true;
+        resolve();
+      } else {
+        this.queue.push(resolve);
+      }
+    });
+  }
+  unlock() {
+    if (this.queue.length > 0) {
+      const nextResolve = this.queue.shift();
+      nextResolve();
+    } else {
+      this.locked = false;
+    }
+  }
+}
+
+class AsyncSemaphore {
+  constructor(maxConcurrency) {
+    this.tasks = [];
+    this.counter = maxConcurrency;
+  }
+  acquire() {
+    return new Promise(resolve => {
+      if (this.counter > 0) {
+        this.counter--;
+        resolve();
+      } else {
+        this.tasks.push(resolve);
+      }
+    });
+  }
+  release() {
+    if (this.tasks.length > 0) {
+      const nextTask = this.tasks.shift();
+      nextTask();
+    } else {
+      this.counter++;
+    }
+  }
+}
+
+async function promisePool(tasks, concurrency) {
+  const results = [];
+  const executing = [];
+  for (const task of tasks) {
+    const p = Promise.resolve().then(() => task());
+    results.push(p);
+    if (concurrency <= tasks.length) {
+      const e = p.then(() => executing.splice(executing.indexOf(e), 1));
+      executing.push(e);
+      if (executing.length >= concurrency) {
+        await Promise.race(executing);
+      }
+    }
+  }
+  return Promise.all(results);
+}
+
+function retryWithBackoff(fn, retries = 3, delay = 1000) {
+  return new Promise((resolve, reject) => {
+    const attempt = (n) => {
+      fn().then(resolve).catch(err => {
+        if (n === 0) {
+          reject(err);
+        } else {
+          setTimeout(() => {
+            attempt(n - 1);
+          }, delay * (4 - n));
+        }
+      });
+    };
+    attempt(retries);
+  });
+}
+
+function levenshteinDistance(a, b) {
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
+function kmpSearch(pattern, text) {
+  if (pattern.length === 0) return 0;
+  let lsp = new Array(pattern.length).fill(0);
+  let j = 0;
+  for (let i = 1; i < pattern.length; i++) {
+    while (j > 0 && pattern[i] !== pattern[j]) {
+      j = lsp[j - 1];
+    }
+    if (pattern[i] === pattern[j]) {
+      j++;
+    }
+    lsp[i] = j;
+  }
+  let res = [];
+  j = 0;
+  for (let i = 0; i < text.length; i++) {
+    while (j > 0 && text[i] !== pattern[j]) {
+      j = lsp[j - 1];
+    }
+    if (text[i] === pattern[j]) {
+      j++;
+    }
+    if (j === pattern.length) {
+      res.push(i - j + 1);
+      j = lsp[j - 1];
+    }
+  }
+  return res;
+}
+
+function parseQueryString(queryString) {
+  const query = {};
+  if (!queryString) return query;
+  const pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+  for (let i = 0; i < pairs.length; i++) {
+    const pair = pairs[i].split('=');
+    const key = decodeURIComponent(pair[0]);
+    const value = decodeURIComponent(pair[1] || '');
+    if (query[key]) {
+      if (Array.isArray(query[key])) {
+        query[key].push(value);
+      } else {
+        query[key] = [query[key], value];
+      }
+    } else {
+      query[key] = value;
+    }
+  }
+  return query;
+}
+
+function buildQueryString(params) {
+  const parts = [];
+  for (const key in params) {
+    if (params.hasOwnProperty(key)) {
+      const val = params[key];
+      if (Array.isArray(val)) {
+        val.forEach(v => {
+          parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
+        });
+      } else if (val !== undefined && val !== null) {
+        parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(val)}`);
+      }
+    }
+  }
+  return parts.length > 0 ? '?' + parts.join('&') : '';
+}
+
+function parseCookieString(cookieStr) {
+  const result = {};
+  if (!cookieStr) return result;
+  const cookies = cookieStr.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+    const parts = cookies[i].split('=');
+    if (parts.length >= 2) {
+      const name = parts[0].trim();
+      const value = parts.slice(1).join('=').trim();
+      result[name] = decodeURIComponent(value);
+    }
+  }
+  return result;
+}
+
+function stringifyCookie(name, value, options = {}) {
+  let str = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
+  if (options.maxAge) {
+    str += `; Max-Age=${options.maxAge}`;
+  }
+  if (options.domain) {
+    str += `; Domain=${options.domain}`;
+  }
+  if (options.path) {
+    str += `; Path=${options.path}`;
+  }
+  if (options.expires) {
+    str += `; Expires=${options.expires.toUTCString()}`;
+  }
+  if (options.secure) {
+    str += `; Secure`;
+  }
+  if (options.httpOnly) {
+    str += `; HttpOnly`;
+  }
+  return str;
+}
+
+function simpleTemplateEngine(template, data) {
+  return template.replace(/\{\{\s*([\w.]+)\s*\}\}/g, function(match, key) {
+    const keys = key.split('.');
+    let value = data;
+    for (let i = 0; i < keys.length; i++) {
+      if (value === undefined || value === null) {
+        return '';
+      }
+      value = value[keys[i]];
+    }
+    return value !== undefined ? value : '';
+  });
+}
+
+class Graph {
+  constructor() {
+    this.adjacencyList = {};
+  }
+  addVertex(vertex) {
+    if (!this.adjacencyList[vertex]) {
+      this.adjacencyList[vertex] = [];
+    }
+  }
+  addEdge(v1, v2) {
+    if (this.adjacencyList[v1] && this.adjacencyList[v2]) {
+      this.adjacencyList[v1].push(v2);
+      this.adjacencyList[v2].push(v1);
+    }
+  }
+  removeEdge(v1, v2) {
+    this.adjacencyList[v1] = this.adjacencyList[v1].filter(v => v !== v2);
+    this.adjacencyList[v2] = this.adjacencyList[v2].filter(v => v !== v1);
+  }
+  removeVertex(vertex) {
+    while (this.adjacencyList[vertex].length) {
+      const adjacentVertex = this.adjacencyList[vertex].pop();
+      this.removeEdge(vertex, adjacentVertex);
+    }
+    delete this.adjacencyList[vertex];
+  }
+}
+
+function depthFirstSearch(graph, start) {
+  const result = [];
+  const visited = {};
+  const adjacencyList = graph.adjacencyList;
+  (function dfs(vertex) {
+    if (!vertex) return null;
+    visited[vertex] = true;
+    result.push(vertex);
+    adjacencyList[vertex].forEach(neighbor => {
+      if (!visited[neighbor]) {
+        return dfs(neighbor);
+      }
+    });
+  })(start);
+  return result;
+}
+
+function breadthFirstSearch(graph, start) {
+  const queue = [start];
+  const result = [];
+  const visited = {};
+  let currentVertex;
+  visited[start] = true;
+  while (queue.length) {
+    currentVertex = queue.shift();
+    result.push(currentVertex);
+    graph.adjacencyList[currentVertex].forEach(neighbor => {
+      if (!visited[neighbor]) {
+        visited[neighbor] = true;
+        queue.push(neighbor);
+      }
+    });
+  }
+  return result;
+}
+
+class PriorityQueue {
+  constructor() {
+    this.values = [];
+  }
+  enqueue(val, priority) {
+    this.values.push({ val, priority });
+    this.sort();
+  }
+  dequeue() {
+    return this.values.shift();
+  }
+  sort() {
+    this.values.sort((a, b) => a.priority - b.priority);
+  }
+  isEmpty() {
+    return this.values.length === 0;
+  }
+}
+
+function dijkstraAlgorithm(graph, start, finish) {
+  const nodes = new PriorityQueue();
+  const distances = {};
+  const previous = {};
+  let path = [];
+  let smallest;
+  for (let vertex in graph.adjacencyList) {
+    if (vertex === start) {
+      distances[vertex] = 0;
+      nodes.enqueue(vertex, 0);
+    } else {
+      distances[vertex] = Infinity;
+      nodes.enqueue(vertex, Infinity);
+    }
+    previous[vertex] = null;
+  }
+  while (!nodes.isEmpty()) {
+    smallest = nodes.dequeue().val;
+    if (smallest === finish) {
+      while (previous[smallest]) {
+        path.push(smallest);
+        smallest = previous[smallest];
+      }
+      break;
+    }
+    if (smallest || distances[smallest] !== Infinity) {
+      for (let neighbor in graph.adjacencyList[smallest]) {
+        let nextNode = graph.adjacencyList[smallest][neighbor];
+        let candidate = distances[smallest] + nextNode.weight;
+        let nextNeighbor = nextNode.node;
+        if (candidate < distances[nextNeighbor]) {
+          distances[nextNeighbor] = candidate;
+          previous[nextNeighbor] = smallest;
+          nodes.enqueue(nextNeighbor, candidate);
+        }
+      }
+    }
+  }
+  return path.concat(start).reverse();
+}
+
+function topologicalSort(graph) {
+  const visited = new Set();
+  const stack = [];
+  function explore(vertex) {
+    visited.add(vertex);
+    const neighbors = graph[vertex] || [];
+    for (let i = 0; i < neighbors.length; i++) {
+      if (!visited.has(neighbors[i])) {
+        explore(neighbors[i]);
+      }
+    }
+    stack.unshift(vertex);
+  }
+  for (let vertex in graph) {
+    if (!visited.has(vertex)) {
+      explore(vertex);
+    }
+  }
+  return stack;
+}
+
+class BinarySearchTreeNode {
+  constructor(value) {
+    this.value = value;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+class BinarySearchTree {
+  constructor() {
+    this.root = null;
+  }
+  insert(value) {
+    const newNode = new BinarySearchTreeNode(value);
+    if (this.root === null) {
+      this.root = newNode;
+      return this;
+    }
+    let current = this.root;
+    while (true) {
+      if (value === current.value) return undefined;
+      if (value < current.value) {
+        if (current.left === null) {
+          current.left = newNode;
+          return this;
+        }
+        current = current.left;
+      } else {
+        if (current.right === null) {
+          current.right = newNode;
+          return this;
+        }
+        current = current.right;
+      }
+    }
+  }
+  find(value) {
+    if (this.root === null) return false;
+    let current = this.root, found = false;
+    while (current && !found) {
+      if (value < current.value) {
+        current = current.left;
+      } else if (value > current.value) {
+        current = current.right;
+      } else {
+        found = true;
+      }
+    }
+    if (!found) return undefined;
+    return current;
+  }
+}
+
+function grahamScanConvexHull(points) {
+  if (points.length < 3) return points;
+  let pivot = points[0];
+  for (let i = 1; i < points.length; i++) {
+    if (points[i].y < pivot.y || (points[i].y === pivot.y && points[i].x < pivot.x)) {
+      pivot = points[i];
+    }
+  }
+  points.sort((a, b) => {
+    let angleA = Math.atan2(a.y - pivot.y, a.x - pivot.x);
+    let angleB = Math.atan2(b.y - pivot.y, b.x - pivot.x);
+    if (angleA === angleB) {
+      let distA = Math.pow(a.x - pivot.x, 2) + Math.pow(a.y - pivot.y, 2);
+      let distB = Math.pow(b.x - pivot.x, 2) + Math.pow(b.y - pivot.y, 2);
+      return distA - distB;
+    }
+    return angleA - angleB;
+  });
+  let hull = [points[0], points[1]];
+  for (let i = 2; i < points.length; i++) {
+    while (hull.length > 1) {
+      let top = hull.pop();
+      let secondTop = hull[hull.length - 1];
+      let crossProduct = (top.x - secondTop.x) * (points[i].y - secondTop.y) - (top.y - secondTop.y) * (points[i].x - secondTop.x);
+      if (crossProduct > 0) {
+        hull.push(top);
+        break;
+      }
+    }
+    hull.push(points[i]);
+  }
+  return hull;
+}
+
+function lineSegmentIntersection(p1, p2, p3, p4) {
+  function ccw(A, B, C) {
+    return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
+  }
+  let intersect = ccw(p1, p3, p4) !== ccw(p2, p3, p4) && ccw(p1, p2, p3) !== ccw(p1, p2, p4);
+  if (!intersect) return null;
+  let denominator = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+  if (denominator === 0) return null;
+  let t = ((p1.x - p3.x) * (p3.y - p4.y) - (p1.y - p3.y) * (p3.x - p4.x)) / denominator;
+  return {
+    x: p1.x + t * (p2.x - p1.x),
+    y: p1.y + t * (p2.y - p1.y)
+  };
+}
+
+function pointInPolygon(point, vs) {
+  let x = point[0], y = point[1];
+  let inside = false;
+  for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+    let xi = vs[i][0], yi = vs[i][1];
+    let xj = vs[j][0], yj = vs[j][1];
+    let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function matrixInverse2x2(matrix) {
+  let det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+  if (det === 0) {
+    return null;
+  }
+  let invDet = 1 / det;
+  return [
+    [matrix[1][1] * invDet, -matrix[0][1] * invDet],
+    [-matrix[1][0] * invDet, matrix[0][0] * invDet]
+  ];
+}
+
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; 
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const d = R * c;
+  return d;
+}
+
+class SingletonDesignPattern {
+  constructor(data) {
+    if (SingletonDesignPattern.instance) {
+      return SingletonDesignPattern.instance;
+    }
+    this.data = data;
+    SingletonDesignPattern.instance = this;
+  }
+  getData() {
+    return this.data;
+  }
+  setData(newData) {
+    this.data = newData;
+  }
+}
+
+class SubjectObservable {
+  constructor() {
+    this.observers = [];
+  }
+  subscribe(observer) {
+    this.observers.push(observer);
+  }
+  unsubscribe(observer) {
+    this.observers = this.observers.filter(obs => obs !== observer);
+  }
+  notify(data) {
+    this.observers.forEach(observer => observer.update(data));
+  }
+}
+
+class ObserverClient {
+  constructor(name) {
+    this.name = name;
+  }
+  update(data) {
+    console.log(`${this.name} received data: ${data}`);
+  }
+}
+
+class ShoppingCartStrategy {
+  constructor(discountStrategy) {
+    this.items = [];
+    this.discountStrategy = discountStrategy;
+  }
+  addItem(item) {
+    this.items.push(item);
+  }
+  setStrategy(strategy) {
+    this.discountStrategy = strategy;
+  }
+  calculateTotal() {
+    let total = this.items.reduce((sum, item) => sum + item.price, 0);
+    return this.discountStrategy.applyDiscount(total);
+  }
+}
+
+class PercentageDiscount {
+  constructor(percentage) {
+    this.percentage = percentage;
+  }
+  applyDiscount(total) {
+    return total - (total * (this.percentage / 100));
+  }
+}
+
+class SingleNeuronPerceptron {
+  constructor(learningRate = 0.1, iterations = 100) {
+    this.learningRate = learningRate;
+    this.iterations = iterations;
+    this.weights = [];
+    this.bias = 0;
+  }
+  train(inputs, labels) {
+    this.weights = new Array(inputs[0].length).fill(0);
+    for (let i = 0; i < this.iterations; i++) {
+      for (let j = 0; j < inputs.length; j++) {
+        let prediction = this.predict(inputs[j]);
+        let error = labels[j] - prediction;
+        for (let k = 0; k < this.weights.length; k++) {
+          this.weights[k] += this.learningRate * error * inputs[j][k];
+        }
+        this.bias += this.learningRate * error;
+      }
+    }
+  }
+  predict(input) {
+    let sum = this.bias;
+    for (let i = 0; i < this.weights.length; i++) {
+      sum += input[i] * this.weights[i];
+    }
+    return sum >= 0 ? 1 : 0;
+  }
+}
+
+function tfIdfCalculator(documents) {
+  let termFrequency = [];
+  let documentFrequency = {};
+  documents.forEach(doc => {
+    let words = doc.toLowerCase().match(/\b\w+\b/g) || [];
+    let tf = {};
+    let uniqueWords = new Set(words);
+    words.forEach(word => {
+      tf[word] = (tf[word] || 0) + 1 / words.length;
+    });
+    termFrequency.push(tf);
+    uniqueWords.forEach(word => {
+      documentFrequency[word] = (documentFrequency[word] || 0) + 1;
+    });
+  });
+  let tfIdf = [];
+  let numDocs = documents.length;
+  termFrequency.forEach(tf => {
+    let docTfIdf = {};
+    for (let word in tf) {
+      let idf = Math.log(numDocs / (1 + documentFrequency[word]));
+      docTfIdf[word] = tf[word] * idf;
+    }
+    tfIdf.push(docTfIdf);
+  });
+  return tfIdf;
+}
+
+class LocalStorageWithExpiry {
+  static setItem(key, value, expiryInMinutes) {
+    const now = new Date();
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryInMinutes * 60000,
+    };
+    localStorage.setItem(key, JSON.stringify(item));
+  }
+  static getItem(key) {
+    const itemStr = localStorage.getItem(key);
+    if (!itemStr) return null;
+    const item = JSON.parse(itemStr);
+    const now = new Date();
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return item.value;
+  }
+  static removeItem(key) {
+    localStorage.removeItem(key);
+  }
+}
+
+function deepMergeObjects(target, source) {
+  let output = Object.assign({}, target);
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach(key => {
+      if (isObject(source[key])) {
+        if (!(key in target)) {
+          Object.assign(output, { [key]: source[key] });
+        } else {
+          output[key] = deepMergeObjects(target[key], source[key]);
+        }
+      } else {
+        Object.assign(output, { [key]: source[key] });
+      }
+    });
+  }
+  return output;
+  function isObject(item) {
+    return (item && typeof item === 'object' && !Array.isArray(item));
+  }
+}
+
+function flattenObject(obj, prefix = '') {
+  let flattened = {};
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      let newKey = prefix ? prefix + '.' + key : key;
+      if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+        Object.assign(flattened, flattenObject(obj[key], newKey));
+      } else {
+        flattened[newKey] = obj[key];
+      }
+    }
+  }
+  return flattened;
+}
+
+function unflattenObject(data) {
+  if (Object(data) !== data || Array.isArray(data)) return data;
+  let result = {};
+  for (let p in data) {
+    let keys = p.split('.');
+    let last = keys.pop();
+    let current = result;
+    for (let key of keys) {
+      current[key] = current[key] || {};
+      current = current[key];
+    }
+    current[last] = data[p];
+  }
+  return result;
+}
+
+function generateUUIDv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    let r = Math.random() * 16 | 0,
+        v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+function parseCSVString(csvText, delimiter = ',') {
+  let lines = csvText.split('\n');
+  let result = [];
+  let headers = lines[0].split(delimiter).map(header => header.trim());
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    let obj = {};
+    let currentline = lines[i].split(delimiter);
+    for (let j = 0; j < headers.length; j++) {
+      obj[headers[j]] = currentline[j] ? currentline[j].trim() : '';
+    }
+    result.push(obj);
+  }
+  return result;
+}
+
+function stringifyToCSV(objArray, delimiter = ',') {
+  if (!objArray || !objArray.length) return '';
+  let array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+  let str = '';
+  let keys = Object.keys(array[0]);
+  str += keys.join(delimiter) + '\r\n';
+  for (let i = 0; i < array.length; i++) {
+    let line = '';
+    for (let index in keys) {
+      if (line !== '') line += delimiter;
+      let value = array[i][keys[index]];
+      if (typeof value === 'string' && value.includes(delimiter)) {
+        value = `"${value}"`;
+      }
+      line += value;
+    }
+    str += line + '\r\n';
+  }
+  return str;
+}
+
+function formatBytesReadable(bytes, decimals = 2) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function shuffleArrayFisherYates(array) {
+  let currentIndex = array.length, temporaryValue, randomIndex;
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+  return array;
+}
+
+function chunkArrayItems(array, size) {
+  let result = [];
+  if (!array || size <= 0) return result;
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
+}
+
+function generateRandomHexColorCode() {
+  let letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+function isValidEmailAddress(email) {
+  if (typeof email !== 'string') return false;
+  let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email.toLowerCase());
+}
+
+function toCamelCaseString(str) {
+  return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+    return index === 0 ? word.toLowerCase() : word.toUpperCase();
+  }).replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
+}
+
+function toSnakeCaseString(str) {
+  return str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+    .map(x => x.toLowerCase())
+    .join('_');
+}
+
+function toKebabCaseString(str) {
+  return str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+    .map(x => x.toLowerCase())
+    .join('-');
+}
+
+function getArrayIntersection(arr1, arr2) {
+  let set1 = new Set(arr1);
+  let set2 = new Set(arr2);
+  let intersection = new Set([...set1].filter(x => set2.has(x)));
+  return Array.from(intersection);
+}
+
+function getArrayDifference(arr1, arr2) {
+  let set1 = new Set(arr1);
+  let set2 = new Set(arr2);
+  let difference = new Set([...set1].filter(x => !set2.has(x)));
+  return Array.from(difference);
+}
+
+function getArraySymmetricDifference(arr1, arr2) {
+  let diff1 = getArrayDifference(arr1, arr2);
+  let diff2 = getArrayDifference(arr2, arr1);
+  return diff1.concat(diff2);
+}
+
+function clampValueInRange(value, min, max) {
+  if (value === undefined || isNaN(value)) return 0;
+  let lower = Math.min(min, max);
+  let upper = Math.max(min, max);
+  return Math.min(Math.max(value, lower), upper);
+}
+
+function stripHtmlTagsFromString(str) {
+  if ((str === null) || (str === '')) {
+    return false;
+  } else {
+    str = str.toString();
+    return str.replace(/<[^>]*>/g, '');
+  }
 }
