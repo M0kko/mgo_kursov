@@ -1,0 +1,361 @@
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr
+
+def selection_sort(arr):
+    for i in range(len(arr)):
+        min_idx = i
+        for j in range(i + 1, len(arr)):
+            if arr[min_idx] > arr[j]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr
+
+def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and key < arr[j]:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    return arr
+
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quick_sort(left) + middle + quick_sort(right)
+
+def merge_sort(arr):
+    if len(arr) > 1:
+        mid = len(arr) // 2
+        left = arr[:mid]
+        right = arr[mid:]
+        merge_sort(left)
+        merge_sort(right)
+    return arr
+
+def factorial(n):
+    if n == 0 or n == 1:
+        return 1
+    return n * factorial(n - 1)
+
+def fibonacci(n):
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+def is_prime(n):
+    if n <= 1:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def power(base, exp):
+    result = 1
+    for _ in range(exp):
+        result *= base
+    return result
+
+def reverse_list(arr):
+    reversed_arr = []
+    for i in range(len(arr) - 1, -1, -1):
+        reversed_arr.append(arr[i])
+    return reversed_arr
+
+def filter_even(arr):
+    evens = []
+    for num in arr:
+        if num % 2 == 0:
+            evens.append(num)
+    return evens
+
+def find_max(arr):
+    if not arr:
+        return None
+    max_val = arr[0]
+    for num in arr:
+        if num > max_val:
+            max_val = num
+    return max_val
+
+def sum_array(arr):
+    total = 0
+    for num in arr:
+        total += num
+    return total
+
+def remove_duplicates(arr):
+    unique = []
+    for num in arr:
+        if num not in unique:
+            unique.append(num)
+    return unique
+
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def greet(self):
+        return f"Hello, my name is {self.name}"
+
+class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def area(self):
+        return self.width * self.height
+
+class BankAccount:
+    def __init__(self, balance):
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+        return self.balance
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def move(self, dx, dy):
+        self.x += dx
+        self.y += dy
+
+class Car:
+    def __init__(self, brand, model):
+        self.brand = brand
+        self.model = model
+        self.is_running = False
+
+    def start_engine(self):
+        self.is_running = True
+
+
+function bubbleSort(arr) {
+    let n = arr.length;
+    for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                let temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+    return arr;
+}
+
+function selectionSort(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        let minIdx = i;
+        for (let j = i + 1; j < arr.length; j++) {
+            if (arr[minIdx] > arr[j]) {
+                minIdx = j;
+            }
+        }
+        let temp = arr[i];
+        arr[i] = arr[minIdx];
+        arr[minIdx] = temp;
+    }
+    return arr;
+}
+
+function insertionSort(arr) {
+    for (let i = 1; i < arr.length; i++) {
+        let key = arr[i];
+        let j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+    return arr;
+}
+
+function quickSort(arr) {
+    if (arr.length <= 1) {
+        return arr;
+    }
+    let pivot = arr[Math.floor(arr.length / 2)];
+    let left = arr.filter(x => x < pivot);
+    let middle = arr.filter(x => x === pivot);
+    let right = arr.filter(x => x > pivot);
+    return quickSort(left).concat(middle, quickSort(right));
+}
+
+function mergeSort(arr) {
+    if (arr.length <= 1) {
+        return arr;
+    }
+    let mid = Math.floor(arr.length / 2);
+    let left = arr.slice(0, mid);
+    let right = arr.slice(mid);
+    return mergeSort(left).concat(mergeSort(right));
+}
+
+function factorial(n) {
+    if (n === 0 || n === 1) {
+        return 1;
+    }
+    return n * factorial(n - 1);
+}
+
+function fibonacci(n) {
+    let a = 0, b = 1, temp;
+    for (let i = 0; i < n; i++) {
+        temp = a;
+        a = b;
+        b = temp + b;
+    }
+    return a;
+}
+
+function gcd(a, b) {
+    while (b !== 0) {
+        let temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+function isPrime(n) {
+    if (n <= 1) return false;
+    for (let i = 2; i <= Math.sqrt(n); i++) {
+        if (n % i === 0) return false;
+    }
+    return true;
+}
+
+function power(base, exp) {
+    let result = 1;
+    for (let i = 0; i < exp; i++) {
+        result *= base;
+    }
+    return result;
+}
+
+function reverseArray(arr) {
+    let reversed = [];
+    for (let i = arr.length - 1; i >= 0; i--) {
+        reversed.push(arr[i]);
+    }
+    return reversed;
+}
+
+function filterEven(arr) {
+    let evens = [];
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] % 2 === 0) {
+            evens.push(arr[i]);
+        }
+    }
+    return evens;
+}
+
+function findMax(arr) {
+    if (arr.length === 0) return null;
+    let maxVal = arr[0];
+    for (let i = 1; i < arr.length; i++) {
+        if (arr[i] > maxVal) {
+            maxVal = arr[i];
+        }
+    }
+    return maxVal;
+}
+
+function sumArray(arr) {
+    let total = 0;
+    for (let i = 0; i < arr.length; i++) {
+        total += arr[i];
+    }
+    return total;
+}
+
+function removeDuplicates(arr) {
+    let unique = [];
+    for (let i = 0; i < arr.length; i++) {
+        if (unique.indexOf(arr[i]) === -1) {
+            unique.push(arr[i]);
+        }
+    }
+    return unique;
+}
+
+class Person {
+    constructor(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    greet() {
+        return "Hello, my name is " + this.name;
+    }
+}
+
+class Rectangle {
+    constructor(width, height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    area() {
+        return this.width * this.height;
+    }
+}
+
+class BankAccount {
+    constructor(balance) {
+        this.balance = balance;
+    }
+
+    deposit(amount) {
+        this.balance += amount;
+        return this.balance;
+    }
+}
+
+class Point {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    move(dx, dy) {
+        this.x += dx;
+        this.y += dy;
+    }
+}
+
+class Car {
+    constructor(brand, model) {
+        this.brand = brand;
+        this.model = model;
+        this.isRunning = false;
+    }
+
+    startEngine() {
+        this.isRunning = true;
+    }
+}
